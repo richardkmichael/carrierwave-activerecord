@@ -1,11 +1,22 @@
 # encoding: utf-8
 
-require 'pry'
+require 'digest'
 
 module CarrierWave
   module Storage
 
+    # TODO: This class has access to the uploader and 'identifier' method.
     class ActiveRecord < Abstract
+
+      # FIXME: Override identifier so that it's not a filename, but a SHA1.
+
+      def identifier
+        # Uploader::Store has filename() returning it's @filename
+        # FIXME: investigate versioning?
+        uploader.filename
+        # s = file.readlines # FIXME: Gives an array.
+        # Digest::SHA1.hexdigest(s)
+      end
 
       ##
       # Store a file
@@ -75,6 +86,7 @@ module CarrierWave
         #   sanitize_regexp   # => CarrierWave::SanitizedFile.sanitize_regexp
 
         # TODO: Change this at runtime using a configuration setting.
+        # self.table_name = uploader.config.active_record_tablename
         self.table_name = 'carrier_wave_files'
 
         attr_accessible :original_filename,
