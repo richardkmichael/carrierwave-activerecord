@@ -8,7 +8,7 @@ class CarrierWave::Uploader::Base
 
   configure do |config|
     config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord'
-    config.active_record_tablename         = 'carrierwave_files'
+    config.active_record_tablename         = 'carrier_wave_files'
     config.active_record_nocache           = false
   end
 end
