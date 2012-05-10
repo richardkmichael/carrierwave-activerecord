@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Carrierwave::Activerecord::VERSION
 
-  # TODO: Add dependency versions.
+  # TODO: Add dependency versions.  Dev happens with 0.6.2.
   gem.add_dependency 'carrierwave'
 
   # CarrierWave does not depend on ActiveRecord, so add it.
