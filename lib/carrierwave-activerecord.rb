@@ -19,7 +19,7 @@ module Carrierwave
   module Uploader
     class Base
 
-      if self.config.active_record_nocache?
+      if self.active_record_nocache?
         class ::CarrierWave::SanitizedFile
           # Rails.logger.info "copy_to called by: #{caller[0...10]}"
           # Rails.logger.info "move_to called by: #{caller[0...10]}"
