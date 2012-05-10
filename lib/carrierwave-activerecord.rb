@@ -15,21 +15,29 @@ class CarrierWave::Uploader::Base
   end
 end
 
+# FIXME: This feels like a horrible hack, but where else to inject the method
+# overriding into SanitizedFile?
+
 module Carrierwave
   module Uploader
-    class Base
+    module Store
 
-      if self.active_record_nocache?
-        class ::CarrierWave::SanitizedFile
-          # Rails.logger.info "copy_to called by: #{caller[0...10]}"
-          # Rails.logger.info "move_to called by: #{caller[0...10]}"
-          def move_to(*args); self; end
-          def copy_to(*args); self; end
+      alias_method :original_store!, :store!
+
+      def store!
+        # FIXME: Needs a class_eval to do this in the Uploader instance.
+        if self.active_record_nocache?
+          class ::CarrierWave::SanitizedFile
+            # Rails.logger.info "copy_to called by: #{caller[0...10]}"
+            # Rails.logger.info "move_to called by: #{caller[0...10]}"
+            def move_to(*args); self; end
+            def copy_to(*args); self; end
+          end
         end
-      end
 
-    end # Base
+        original_store!
+      end # #store!
+
+    end # Store
   end # Uploader
-
 end
-
