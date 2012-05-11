@@ -27,7 +27,7 @@ module Carrierwave
       def store!
         # FIXME: Needs a class_eval to do this in the Uploader instance.
         if self.active_record_nocache?
-          class ::CarrierWave::SanitizedFile
+          ::CarrierWave::SanitizedFile.class_eval do
             # Rails.logger.info "copy_to called by: #{caller[0...10]}"
             # Rails.logger.info "move_to called by: #{caller[0...10]}"
             def move_to(*args); self; end
