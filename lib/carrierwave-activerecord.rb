@@ -19,8 +19,6 @@ class CarrierWave::Uploader::Base
   def cache!(new_file)
     unless active_record_cache
       CarrierWave::SanitizedFile.class_eval do
-        # Rails.logger.info "move_to called by: #{caller[0...10]}"
-        # Rails.logger.info "copy_to called by: #{caller[0...10]}"
         def move_to(*args); self; end
         def copy_to(*args); self; end
       end
