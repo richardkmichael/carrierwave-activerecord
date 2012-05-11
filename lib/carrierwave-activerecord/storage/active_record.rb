@@ -5,17 +5,12 @@ require 'digest'
 module CarrierWave
   module Storage
 
-    # TODO: This class has access to the uploader and 'identifier' method.
     class ActiveRecord < Abstract
 
-      # FIXME: Override identifier so that it's not a filename, but a SHA1.
-
+      # FIXME: investigate versioning?  should we store a tuple: [sha1, filename] ?
       def identifier
-        # Uploader::Store has filename() returning it's @filename
-        # FIXME: investigate versioning?
-        uploader.filename
-        # s = file.readlines # FIXME: Gives an array.
-        # Digest::SHA1.hexdigest(s)
+        identifier ||= "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
+        Digest::SHA1.hexdigest(identifier)
       end
 
       ##
@@ -32,8 +27,8 @@ module CarrierWave
       def store!(file)
         attributes = { :original_filename => file.original_filename,
                        :content_type      => file.content_type,
+                       :identifier        => uploader.identifier,
                        :extension         => file.extension,
-                       :filename          => file.filename,
                        :size              => file.size,
                        :data              => file.read }
 
@@ -57,16 +52,18 @@ module CarrierWave
       #
       def retrieve!(identifier)
         # begin
-        file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(identifier)
+        file = CarrierWave::Storage::ActiveRecord::File.find_by_identifier(identifier)
 
-        # NOTE: The URL could be saved during store!(), but then if the mount point
-        #       changes, the DB records would need to be re-written.  Messy.
-        #       ex. URL saved with mount point "avatar", but later changes to "picture".
+        #  The URL could be saved during store!(), but then if the mount point
+        #  changes, the DB records would need to be re-written.  Messy.
+        #  ex. URL saved with mount point "avatar", but later changes to "picture".
+        # /articles/1/file/my_file.txt
         file.url = '/' + [ uploader.model.class.to_s.downcase.pluralize,
                            uploader.model.id,
-                           uploader.mounted_as.to_s.pluralize,
-                           file.filename ].join('/')
+                           uploader.mounted_as.to_s,
+                           file.original_filename ].join('/')
         file
+        #
         # rescue ActiveRecord::RecordNotFound => e
         #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
         # end
@@ -91,8 +88,8 @@ module CarrierWave
 
         attr_accessible :original_filename,
                         :content_type,
+                        :identifier,
                         :extension,
-                        :filename,
                         :size,
                         :data
 
