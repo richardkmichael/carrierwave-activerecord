@@ -2,7 +2,7 @@ require 'carrierwave'
 
 require 'carrierwave-activerecord/version'
 
-CarrierWave::Storage.autoload :ActiveRecord, 'carrierwave/storage/active_record'
+CarrierWave::Storage.autoload :ActiveRecord, 'carrierwave-activerecord/storage/active_record'
 
 class CarrierWave::Uploader::Base
   add_config :active_record_tablename
