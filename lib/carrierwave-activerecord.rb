@@ -16,6 +16,7 @@ class CarrierWave::Uploader::Base
 
   alias_method :original_cache!, :cache!
 
+  # TODO: Should the alias_method and "original_cache!()" call be wrappe in the unless...
   def cache!(new_file)
     unless active_record_cache
       CarrierWave::SanitizedFile.class_eval do

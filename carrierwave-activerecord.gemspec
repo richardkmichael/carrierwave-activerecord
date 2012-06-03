@@ -16,12 +16,13 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Carrierwave::Activerecord::VERSION
 
-  # TODO: Add dependency versions.  Dev happens with 0.6.2.
+  # TODO: Add dependency versions (dev happens with 0.6.2).
   gem.add_dependency 'carrierwave'
 
-  # CarrierWave does not depend on ActiveRecord, so add it.
+  # CarrierWave does not depend on ActiveRecord (despite using it), but we require it.
   gem.add_dependency 'activerecord'
 
   # TODO: Do we need a platform?
   # gem.platform = Gem::Platform::Ruby
+
 end
