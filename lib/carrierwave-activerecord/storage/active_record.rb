@@ -9,15 +9,15 @@ module CarrierWave
 
     class ActiveRecord < Abstract
 
-      # Change the identifier which is stored in the mounted column; this
-      # allows storage of duplicate files.  Normally, carrierwave uses the
-      # filename here, and then overwrites files with the same name (even if
-      # handled by different uploaders) because the 'store_dir' defaults to
-      # '/public/uploads'.  The upload path may be configured per uploader by
-      # defining 'store_dir'.
+      # Use the SHA1 (not the filename) as the identifier stored in the mounted
+      # column; this permits duplicate file names.  Normally, carrierwave
+      # overwrites an existing file when a new file with the same name is
+      # uploaded (even if handled by different uploaders), because 'store_dir'
+      # defaults to '/public/uploads'.  The upload path may be configured per
+      # uploader by defining 'store_dir'.
 
-      # We can't use "model.id", because ids can collide because the engine
-      # storage is not [necessarily] specific to a model.
+      # We can't use "model.id"; two ids may collide because the storage is not
+      # [necessarily] specific to a model.
 
       # class House < AR::Base
       #   attr_accessor :photo
@@ -34,8 +34,7 @@ module CarrierWave
 
       def identifier
         # FIXME: identifier ||= "#{model.name} #{model.id}" for column value readability?
-        @identifier ||= "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
-        Digest::SHA1.hexdigest(@identifier)
+        @identifier ||= Digest::SHA1.hexdigest "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
       end
 
       ##
@@ -49,14 +48,14 @@ module CarrierWave
       #
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
-      def store!(file)
+      def store!(sanitized_file)
 
-        attributes = { :original_filename => file.original_filename,
-                       :content_type      => file.content_type,
+        attributes = { :original_filename => sanitized_file.original_filename,
+                       :content_type      => sanitized_file.content_type,
                        :identifier        => self.identifier,
-                       :extension         => file.extension,
-                       :size              => file.size,
-                       :data              => file.read }
+                       :extension         => sanitized_file.extension,
+                       :size              => sanitized_file.size,
+                       :data              => sanitized_file.read }
 
         # TODO: Error handling in case the migration has not been run.
         # begin
@@ -80,7 +79,7 @@ module CarrierWave
       def retrieve!(identifier)
 
         # begin
-        file = CarrierWave::Storage::ActiveRecord::File.find_by_identifier(identifier)
+        file = CarrierWave::Storage::ActiveRecord::File.find_by_identifier!(identifier)
 
         #  The URL could be saved during store!(), but then if the mount point
         #  changes, the DB records would need to be re-written (messy).
@@ -100,6 +99,7 @@ module CarrierWave
 
         file
 
+        # TODO: Error handling in case the file does not exist anymore.
         # rescue ActiveRecord::RecordNotFound => e
         #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
         # end
@@ -138,8 +138,8 @@ module CarrierWave
         # A url to the file, if available.  Set before the file is returned to CarrierWave.
         attr_accessor :url
 
+        # TODO: Should use the ::ActiveRecord::Base.exists? method.
         # Check if the file exists on the remote service.
-        # TODO: Should be class method somewhere?
         def exists?
           #  self.class.exists?(:filename => filename)
           'CarrierWave::Storage::ActiveRecord::File#exists? FIXME!'

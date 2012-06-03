@@ -4,7 +4,9 @@ TODO: Write a gem description
 
 ## Installation
 
-Add this line to your application's Gemfile:
+### Add the gem
+
+Add this line to your Gemfile:
 
     gem 'carrierwave-activerecord'
 
@@ -12,9 +14,30 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install manually:
 
     $ gem install carrierwave-activerecord
+
+### Prepare the database
+
+$ rails g migration create_carrier_wave_files
+
+```ruby
+class CreateCarrierWaveFiles < ActiveRecord::Migration
+  def change
+    create_table :carrier_wave_files do |t|
+      t.string :original_filename
+      t.string :content_type
+      t.string :extension
+      t.string :identifier
+      t.string :size
+      t.binary :data
+
+      t.timestamps
+    end
+  end
+end
+```
 
 ## Usage
 
