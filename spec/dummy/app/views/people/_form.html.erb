@@ -1,0 +1,39 @@
+<%= form_for @article do |f| %>
+
+  <% if @article.errors.any? %>
+    <div id="errors">
+      <h2>
+      <%= pluralize(@article.errors.count, "error") %> prohibited this article from being saved:
+      </h2>
+
+      <ul>
+      <% @article.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </div>
+
+  <div class="field">
+    <%= f.fields_for :article_files do |article_file| %>
+      <%= article_file.label      :file, 'One' %>
+      <%= article_file.file_field :file %>
+    <% end %>
+  </div>
+
+  <div class="field">
+    <%= f.fields_for :article_files do |article_file| %>
+      <%= article_file.label      :file, 'Two' %>
+      <%= article_file.file_field :file %>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

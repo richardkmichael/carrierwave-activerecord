@@ -1,0 +1,11 @@
+<div>
+  <b>Title:</b>
+  <%= @article.title %>
+</div>
+
+<% @article.article_files.each do |article_file| %>
+  <div>
+    <b>File:</b>
+    <a href='<%= "#{@url_prefix}#{article_file.file}" %>'><%= "#{@url_prefix}#{article_file.file}" %></a>
+  </div>
+<% end %>

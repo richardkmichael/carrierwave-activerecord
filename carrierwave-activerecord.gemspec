@@ -22,6 +22,10 @@ Gem::Specification.new do |gem|
   # CarrierWave does not depend on ActiveRecord (despite using it), but we require it.
   gem.add_dependency 'activerecord'
 
+  gem.add_development_dependency 'combustion'
+  gem.add_development_dependency 'sqlite3' # For combustion.
+  gem.add_development_dependency 'pry'
+
   # TODO: Do we need a platform?
   # gem.platform = Gem::Platform::Ruby
 
