@@ -1,11 +1,14 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/carrierwave-activerecord/version', __FILE__)
+#
+$:.push File.expand_path('../lib', __FILE__)
+
+require 'carrierwave-activerecord/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ['Richard Michael']
   gem.email         = ['rmichael@edgeofthenet.org']
-  gem.description   = %q{Store CarrierWave uploaded files using ActiveRecord.}
-  gem.summary       = %q{Store CarrierWave uploaded files using ActiveRecord.}
+  gem.description   = %q{Store CarrierWave uploaded file data in ActiveRecord.}
+  gem.summary       = %q{Store CarrierWave uploaded file data in ActiveRecord.}
   gem.homepage      = 'http://github.com/richardkmichael/carrierwave-activerecord'
 
   # TODO: Explicitly list files, don't use `ls-files`.
@@ -14,15 +17,12 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = 'carrierwave-activerecord'
   gem.require_paths = ['lib']
-  gem.version       = Carrierwave::Activerecord::VERSION
+  gem.version       = CarrierWave::ActiveRecord::VERSION
 
   # TODO: Add dependency versions (dev happens with 0.6.2).
   gem.add_dependency 'carrierwave'
 
-  # CarrierWave does not depend on ActiveRecord (despite using it), but we require it.
   gem.add_dependency 'activerecord'
 
-  # TODO: Do we need a platform?
-  # gem.platform = Gem::Platform::Ruby
-
+  gem.add_development_dependency 'sqlite3'
 end

@@ -1,7 +1,6 @@
-# encoding: utf-8
+# -*- encoding: utf-8 -*-
 
-# TODO: investigate versioning?  should we store a tuple: [sha1, filename] ?
-
+require 'active_record'
 require 'digest'
 
 module CarrierWave
@@ -105,6 +104,12 @@ module CarrierWave
         # end
       end
 
+      # class File
+      #   def initialize file
+      #     attributes = read_file_attributes file
+      #     @file = ::ActiveRecord::Base.create attributes
+      #   end
+      # end
 
       class File < ::ActiveRecord::Base
 
