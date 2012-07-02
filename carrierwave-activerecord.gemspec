@@ -21,7 +21,6 @@ Gem::Specification.new do |gem|
 
   # TODO: Add dependency versions (dev happens with 0.6.2).
   gem.add_dependency 'carrierwave'
-
   gem.add_dependency 'activerecord'
 
   gem.add_development_dependency 'sqlite3'
