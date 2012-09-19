@@ -1,5 +1,5 @@
+require 'active_record'
 require 'carrierwave'
-
 require 'carrierwave-activerecord/version'
 
 CarrierWave::Storage.autoload :ActiveRecord, 'carrierwave-activerecord/storage/active_record'
