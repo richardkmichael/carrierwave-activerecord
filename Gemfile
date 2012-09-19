@@ -9,4 +9,6 @@ gem "activerecord", "~> 3.2.8"
 
 group :development, :test do
   gem "cucumber", "~> 1.2.1"
+  gem "guard-cucumber", "~> 1.2.0"
+  gem 'rb-fsevent', '~> 0.9.1'
 end
