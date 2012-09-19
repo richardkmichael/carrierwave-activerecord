@@ -20,6 +20,21 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+To use the activerecord store add the following line to your uploader:
+
+    storage :active_record
+
+The gem currently assumes that there is a table in the database with the name
+<pre>carrier_wave_files</pre> to store the images in. This table must have the
+following columns:
+
+* original_filename: string
+* content_type: string
+* extension: string
+* filname: string
+* size: integer
+* data: binary
+
 ## Contributing
 
 1. Fork it
