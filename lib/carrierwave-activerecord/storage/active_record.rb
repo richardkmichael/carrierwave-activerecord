@@ -4,62 +4,83 @@ require 'pry'
 
 module CarrierWave
   module Storage
-    class ActiveRecord < Abstract
+    module ActiveRecord 
+      class StorageProvider < Abstract
+        ##
+        # Store a file
+        #
+        # === Parameters
+        #
+        # [file (CarrierWave::SanitizedFile)] the file to store
+        #
+        # === Returns
+        #
+        # [CarrierWave::Storage::ActiveRecord::File] the stored file
+        #
+        def store!(file)
+          # begin
+          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file)
+          # rescue <no such table error> => e
+          #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_table')
+          # end
+        end
 
-      ##
-      # Store a file
-      #
-      # === Parameters
-      #
-      # [file (CarrierWave::SanitizedFile)] the file to store
-      #
-      # === Returns
-      #
-      # [CarrierWave::Storage::ActiveRecord::File] the stored file
-      #
-      def store!(file)
-        attributes = { :original_filename => file.original_filename,
-                       :content_type      => file.content_type,
-                       :extension         => file.extension,
-                       :filename          => file.filename,
-                       :size              => file.size,
-                       :data              => file.read }
+        ##
+        # Retrieve a file
+        #
+        # === Parameters
+        #
+        # [identifier (String)] unique identifier for file
+        #
+        # === Returns
+        #
+        # [CarrierWave::Storage::ActiveRecord::File] the stored file
+        #
+        def retrieve!(identifier)
+          FileProxy.fetch!(identifier)
+        end
+      end 
 
-        # begin
-        CarrierWave::Storage::ActiveRecord::File.create!(attributes)
-        # rescue <no such table error> => e
-        #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_table')
-        # end
+      class FileProxy 
+        attr_reader :file
+
+        def initialize(file)
+          @file = file
+        end
+
+        def self.create!(new_file)
+          attributes = { :original_filename => new_file.original_filename,
+                         :content_type      => new_file.content_type,
+                         :extension         => new_file.extension,
+                         :filename          => new_file.filename,
+                         :size              => new_file.size,
+                         :data              => new_file.read }
+          ar_file = File.new(attributes)
+          ar_file.save
+          self.new(ar_file)
+        end
+
+        def self.fetch!(identifier)
+          self.new(nil)
+        end
+
+        def old_retrieve_code
+          # begin
+          file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(identifier)
+
+          # NOTE: The URL could be saved during store!(), but then if the mount point
+          #       changes, the DB records would need to be re-written.  Messy.
+          #       ex. URL saved with mount point "avatar", but later changes to "picture".
+          file.url = '/' + [ uploader.model.class.to_s.downcase.pluralize,
+            uploader.model.id,
+            uploader.mounted_as.to_s.pluralize,
+            file.filename ].join('/')
+          file
+          # rescue ActiveRecord::RecordNotFound => e
+          #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
+          # end
+        end
       end
-
-      ##
-      # Retrieve a file
-      #
-      # === Parameters
-      #
-      # [identifier (String)] unique identifier for file
-      #
-      # === Returns
-      #
-      # [CarrierWave::Storage::ActiveRecord::File] the stored file
-      #
-      def retrieve!(identifier)
-        # begin
-        file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(identifier)
-
-        # NOTE: The URL could be saved during store!(), but then if the mount point
-        #       changes, the DB records would need to be re-written.  Messy.
-        #       ex. URL saved with mount point "avatar", but later changes to "picture".
-        file.url = '/' + [ uploader.model.class.to_s.downcase.pluralize,
-                           uploader.model.id,
-                           uploader.mounted_as.to_s.pluralize,
-                           file.filename ].join('/')
-        file
-        # rescue ActiveRecord::RecordNotFound => e
-        #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
-        # end
-      end
-
 
       class File < ::ActiveRecord::Base
 
@@ -112,6 +133,5 @@ module CarrierWave
         end
       end # File
     end # ActiveRecord
-
   end # Storage
 end # CarrierWave

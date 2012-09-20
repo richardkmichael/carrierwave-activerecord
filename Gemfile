@@ -14,4 +14,5 @@ group :development, :test do
   gem "guard-rspec", "~> 1.2.1"
   gem 'rb-fsevent', '~> 0.9.1'
   gem "sqlite3", "~> 1.3.6"
+  gem "debugger", "~> 1.2.0"
 end
