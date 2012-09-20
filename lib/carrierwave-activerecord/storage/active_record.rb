@@ -4,7 +4,6 @@ require 'pry'
 
 module CarrierWave
   module Storage
-
     class ActiveRecord < Abstract
 
       ##
