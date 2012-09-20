@@ -35,6 +35,12 @@ following columns:
 * size: integer
 * data: binary
 
+### ActiveRecord specifics
+
+The gem needs a database connection. Inside a rails app the default connection
+can be used. For the usage in a non-rails environment ensure that the datatabase
+connection is ready before starting to store files with an uploader.
+
 ## Contributing
 
 1. Fork it
