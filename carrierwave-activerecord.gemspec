@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require 'carrierwave-activerecord'
+require 'carrierwave-activerecord/storage/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ['Richard Michael', 'Julien Gantner']
@@ -18,12 +18,15 @@ Gem::Specification.new do |gem|
 
   # usage dependencies
   gem.add_dependency "carrierwave", "~> 0.6.2"
-  gem.add_dependency "activerecord", "= 3.2.2"
+  gem.add_dependency "activerecord", "~> 3.2.2"
 
   # required development dependencies
   gem.add_development_dependency "cucumber", "~> 1.2.1"
   gem.add_development_dependency "rspec", "~> 2.11.0"
   gem.add_development_dependency "sqlite3", "~> 1.3.6"
+  gem.add_development_dependency "guard-cucumber", "~> 1.2.0"
+  gem.add_development_dependency "guard-rspec", "~> 1.2.1"
+  gem.add_development_dependency 'rb-fsevent', '~> 0.9.1'
 
   # add default plattform as suggested in
   # http://http://docs.rubygems.org/read/chapter/20#platform
