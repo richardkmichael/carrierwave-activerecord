@@ -5,6 +5,7 @@ module CarrierWave
     module ActiveRecord 
       describe FileProxy do
         before :each do
+          CarrierWave::Storage::ActiveRecord::File.delete_all
           @file = double('file')
           @initialization_values = { filename: 'sample.png', original_filename: 'o_sample.png', content_type: 'image/png', size: 123, extension: 'png', data: 1337 }
           @initialization_values.each do |property, value|

@@ -21,9 +21,3 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 end
-
-RSpec.configure do |config|
-  config.before :each do
-    CarrierWave::Storage::ActiveRecord::File.delete_all
-  end
-end
