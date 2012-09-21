@@ -1,9 +1,11 @@
 require 'active_record'
 require 'carrierwave'
-require 'carrierwave-activerecord/version'
 
 module CarrierWave
   module Storage
+    module ActiveRecord
+      autoload :VERSION, 'carrierwave-activerecord/storage/version'
+    end
     autoload :ActiveRecord, 'carrierwave-activerecord/storage/active_record'
   end
 

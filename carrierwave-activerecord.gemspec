@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = 'carrierwave-activerecord'
   gem.require_paths = ['lib']
-  gem.version       = Carrierwave::Activerecord::VERSION
+  gem.version       = Carrierwave::Storage::ActiveRecord::VERSION
 
   # TODO: Add dependency versions.  Dev happens with 0.6.2.
   gem.add_dependency 'carrierwave'
