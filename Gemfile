@@ -3,11 +3,11 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in carrierwave-activerecord.gemspec
 gemspec
 
-gem "pry", "~> 0.9.10"
 gem "carrierwave", "~> 0.6.2"
 gem "activerecord", "~> 3.2.8"
 
 group :development, :test do
+  gem "pry", "~> 0.9.10"
   gem "cucumber", "~> 1.2.1"
   gem "rspec", "~> 2.11.0"
   gem "guard-cucumber", "~> 1.2.0"
