@@ -17,7 +17,7 @@ module CarrierWave
       add_config :active_record_cache
 
       configure do |config|
-        config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord::StorageEngine'
+        config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord::StorageProvider'
         config.active_record_tablename         = 'carrier_wave_files'
         config.active_record_cache             = false
       end
