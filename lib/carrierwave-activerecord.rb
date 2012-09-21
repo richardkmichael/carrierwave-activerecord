@@ -4,9 +4,11 @@ require 'carrierwave'
 module CarrierWave
   module Storage
     module ActiveRecord
-      autoload :VERSION, 'carrierwave-activerecord/storage/version'
+      autoload :VERSION,          'carrierwave-activerecord/storage/version'
+      autoload :StorageProvider,  'carrierwave-activerecord/storage/storage_provider'
+      autoload :FileProy,         'carrierwave-activerecord/storage/file_proxy'
+      autoload :File,             'carrierwave-activerecord/storage/file'
     end
-    autoload :ActiveRecord, 'carrierwave-activerecord/storage/active_record'
   end
 
   module Uploader
