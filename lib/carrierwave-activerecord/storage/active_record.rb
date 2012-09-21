@@ -19,7 +19,7 @@ module CarrierWave
         #
         def store!(file)
           # begin
-          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file)
+          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file, uploader.store_path)
           # rescue <no such table error> => e
           #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_table')
           # end
@@ -48,7 +48,7 @@ module CarrierWave
           @file = file
         end
 
-        def self.create!(new_file)
+        def self.create!(new_file, storage_path)
           attributes = { :original_filename => new_file.original_filename,
                          :content_type      => new_file.content_type,
                          :extension         => new_file.extension,

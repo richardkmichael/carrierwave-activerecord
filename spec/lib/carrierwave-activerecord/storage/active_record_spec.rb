@@ -1,7 +1,11 @@
 require 'spec_helper'
 require 'ostruct'
 
-class DummyUploader < CarrierWave::Uploader::Base; end
+class DummyUploader < CarrierWave::Uploader::Base
+  def store_path
+    "/uploads/bla.txt"
+  end
+end
 
 module CarrierWave 
   module Storage
@@ -19,13 +23,18 @@ module CarrierWave
         end
 
         describe '#store!(file)' do
-          it 'calls FileProxy.create! with the given file' do
-            FileProxy.should_receive(:create!).with(@file)
+          it 'calls FileProxy.create! with the given file and the storage path' do
+            FileProxy.should_receive(:create!).with(@file, @uploader.store_path)
             @storage.store!(@file)
           end
 
           it 'returns the file wrapped in an instance of CarrierWave::ActiveRecord::FileProxy' do
             @storage.store!(@file).should be_kind_of FileProxy
+          end
+
+          it 'fetches the storage path from the uploader' do
+            @uploader.should_receive(:store_path).with(no_args)
+            @storage.store!(@file)
           end
         end
 
@@ -59,27 +68,26 @@ module CarrierWave
 
           it 'creates a new instance of the class' do
             File.should_receive(:new).and_return(@ar_file)
-            FileProxy.create!(@file)
+            FileProxy.create!(@file,"/uploads/sample.png")
           end
 
           it 'returns an instance of FileProxy associated with created File' do
             File.stub(:new => @ar_file)
 
-            FileProxy.create!(@file).file.should eq(@ar_file)
+            FileProxy.create!(@file,"/uploads/sample.png").file.should eq(@ar_file)
           end
 
           it 'creates a file in the database' do
-            expect { FileProxy.create!(@file) }.to change(File, :count).by(1)
+            expect { FileProxy.create!(@file,"/uploads/sample.png") }.to change(File, :count).by(1)
           end
 
           it 'initializes the file instance' do
-            proxy = FileProxy.create!(@file)
+            proxy = FileProxy.create!(@file,"/uploads/sample.png")
             
             @initialization_values.each do |property, value|
               proxy.file.send(property).should eq(value)
             end
           end
-
         end
 
         describe '.fetch!(identifier)' do
