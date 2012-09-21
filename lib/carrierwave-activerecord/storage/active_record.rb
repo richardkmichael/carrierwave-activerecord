@@ -52,14 +52,16 @@ module CarrierWave
                          :extension         => new_file.extension,
                          :filename          => new_file.filename,
                          :size              => new_file.size,
-                         :data              => new_file.read }
+                         :data              => new_file.read,
+                         :storage_path      => storage_path }
           ar_file = File.new(attributes)
           ar_file.save
           self.new(ar_file)
         end
 
         def self.fetch!(identifier)
-          self.new(nil)
+          file_record = File.find_by_storage_path(identifier)
+          self.new(file_record)
         end
 
         def old_retrieve_code
@@ -100,7 +102,8 @@ module CarrierWave
                         :extension,
                         :filename,
                         :size,
-                        :data
+                        :data,
+                        :storage_path
 
         # Remove the file from service.
         alias_method :delete, :destroy

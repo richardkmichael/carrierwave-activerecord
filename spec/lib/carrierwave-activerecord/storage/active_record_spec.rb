@@ -1,16 +1,16 @@
 require 'spec_helper'
 require 'ostruct'
 
-class DummyUploader < CarrierWave::Uploader::Base
-  def store_path
-    "/uploads/bla.txt"
-  end
-end
-
 module CarrierWave 
   module Storage
     module ActiveRecord 
       describe StorageProvider do
+        class DummyUploader < CarrierWave::Uploader::Base
+          def store_path
+            "/uploads/bla.txt"
+          end
+        end
+
         before :each do
           @uploader = DummyUploader.new
           @storage = StorageProvider.new(@uploader)
@@ -66,7 +66,7 @@ module CarrierWave
             @ar_file.stub(:save)
           end
 
-          it 'creates a new instance of the class' do
+          it 'creates a new instance of the File class' do
             File.should_receive(:new).and_return(@ar_file)
             FileProxy.create!(@file,"/uploads/sample.png")
           end
@@ -77,7 +77,7 @@ module CarrierWave
             FileProxy.create!(@file,"/uploads/sample.png").file.should eq(@ar_file)
           end
 
-          it 'creates a file in the database' do
+          it 'creates a file record in the database' do
             expect { FileProxy.create!(@file,"/uploads/sample.png") }.to change(File, :count).by(1)
           end
 
@@ -88,15 +88,33 @@ module CarrierWave
               proxy.file.send(property).should eq(value)
             end
           end
+
+          it 'sets the storage path on the file' do
+            file = FileProxy.create!(@file, "/uploads/sample.png").file
+
+            file.storage_path.should eq("/uploads/sample.png")
+          end
         end
 
         describe '.fetch!(identifier)' do
           context 'given the file exists' do
-            it 'returns the file wrapped in a CarrierWave::Storage::ActiveRecord::File object'
+            before :each do
+              @file_record = File.create!(@initialization_values.merge({:storage_path => "/uploads/sample.png"}))
+            end
+
+            it 'returns the file wrapped in a CarrierWave::Storage::ActiveRecord::FileProxy object' do
+              FileProxy.fetch!("/uploads/sample.png").should be_instance_of ::CarrierWave::Storage::ActiveRecord::FileProxy
+            end
+
+            it 'sets the proxy file property to the file record object' do
+              FileProxy.fetch!("/uploads/sample.png").file.should eq(@file_record)
+            end
           end
 
           context "given the file doesn't exist" do
-            it 'returns an blank instance of CarrierWave::Storage::ActiveRecord::File'
+            it 'returns an blank instance of CarrierWave::Storage::ActiveRecord::FileProxy' do
+              FileProxy.fetch!("/uploads/sample.png").should be_instance_of ::CarrierWave::Storage::ActiveRecord::FileProxy
+            end
           end
         end
       end

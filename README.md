@@ -34,6 +34,7 @@ following columns:
 * filname: string
 * size: integer
 * data: binary
+* storage_path: string
 
 ### ActiveRecord specifics
 

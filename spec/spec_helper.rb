@@ -16,7 +16,14 @@ ActiveRecord::Schema.define do
     t.string :filename
     t.integer :size
     t.binary :data
+    t.string :storage_path
 
     t.timestamps
+  end
+end
+
+RSpec.configure do |config|
+  config.before :each do
+    CarrierWave::Storage::ActiveRecord::File.delete_all
   end
 end
