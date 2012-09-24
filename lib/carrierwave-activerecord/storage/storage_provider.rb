@@ -16,7 +16,7 @@ module CarrierWave
         # [CarrierWave::Storage::ActiveRecord::File] the stored file
         #
         def store!(file)
-          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file, uploader.store_path)
+          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file, uploader.filename)
         end
 
         ##

@@ -23,7 +23,7 @@ module CarrierWave
 
         describe '#store!(file)' do
           it 'calls FileProxy.create! with the given file and the storage path' do
-            FileProxy.should_receive(:create!).with(@file, @uploader.store_path)
+            FileProxy.should_receive(:create!).with(@file, @uploader.filename)
             @storage.store!(@file)
           end
 
@@ -32,7 +32,7 @@ module CarrierWave
           end
 
           it 'fetches the storage path from the uploader' do
-            @uploader.should_receive(:store_path).with(no_args)
+            @uploader.should_receive(:filename).with(no_args)
             @storage.store!(@file)
           end
         end
