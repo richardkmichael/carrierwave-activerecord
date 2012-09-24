@@ -44,10 +44,6 @@ module CarrierWave
           config.downloader_path_prefix = "/files"
         end
       end
-
-      def identifier
-        "#{store_path}/#{filename}"
-      end
     end
   end
 end

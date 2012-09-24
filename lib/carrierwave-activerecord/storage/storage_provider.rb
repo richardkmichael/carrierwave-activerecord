@@ -33,6 +33,10 @@ module CarrierWave
         def retrieve!(identifier)
           FileProxy.fetch!(identifier)
         end
+
+        def identifier
+          "/#{store_dir}/#{filename}"
+        end
       end 
     end # ActiveRecord
   end # Storage
