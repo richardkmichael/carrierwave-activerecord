@@ -35,7 +35,7 @@ module CarrierWave
         end
 
         def identifier
-          "/#{store_dir}/#{filename}"
+          "/#{uploader.store_dir}/#{uploader.filename}"
         end
       end 
     end # ActiveRecord
