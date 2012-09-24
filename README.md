@@ -42,6 +42,29 @@ The gem needs a database connection. Inside a rails app the default connection
 can be used. For the usage in a non-rails environment ensure that the datatabase
 connection is ready before starting to store files with an uploader.
 
+### How to get files back from the db
+
+The gem assumes that there is a service that is responsible to handle web
+requests for the files in the db. The Service should be able to handle a HTTP
+request like this:
+
+GET /files/images/sample.png HTTP/1.1
+
+The path of the files is composed of two parts:
+
+* the downloader_path_prefix for routing issues
+* and the storage_path of the file
+
+The downloader_path_prefix can be configured with the downloader_path_prefix
+option available to CarrierWave::Uploader::Base
+
+TODO Example
+
+It defaults to "/files".
+
+The storage path is a property of each file in th db. It is build from the store
+path and the filename.
+
 ## Contributing
 
 1. Fork it
