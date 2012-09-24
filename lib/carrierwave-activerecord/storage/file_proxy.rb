@@ -44,6 +44,10 @@ module CarrierWave
           #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
           # end
         end
+
+        def url
+          CarrierWave::Uploader::Base.downloader_path_prefix + file.storage_path if file
+        end
       end
     end # ActiveRecord
   end # Storage

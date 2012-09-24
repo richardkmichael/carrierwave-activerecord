@@ -4,6 +4,7 @@ module CarrierWave
   module Storage
     module ActiveRecord 
       describe FileProxy do
+        let(:file_record) { File.create!(@initialization_values.merge({:storage_path => "/uploads/sample.png"})) }
         before :each do
           CarrierWave::Storage::ActiveRecord::File.delete_all
           @file = double('file')
@@ -53,7 +54,7 @@ module CarrierWave
         describe '.fetch!(identifier)' do
           context 'given the file exists' do
             before :each do
-              @file_record = File.create!(@initialization_values.merge({:storage_path => "/uploads/sample.png"}))
+              file_record # ensure its present
             end
 
             it 'returns the file wrapped in a CarrierWave::Storage::ActiveRecord::FileProxy object' do
@@ -61,13 +62,30 @@ module CarrierWave
             end
 
             it 'sets the proxy file property to the file record object' do
-              FileProxy.fetch!("/uploads/sample.png").file.should eq(@file_record)
+              FileProxy.fetch!("/uploads/sample.png").file.should eq(file_record)
             end
           end
 
           context "given the file doesn't exist" do
             it 'returns an blank instance of CarrierWave::Storage::ActiveRecord::FileProxy' do
               FileProxy.fetch!("/uploads/sample.png").should be_instance_of ::CarrierWave::Storage::ActiveRecord::FileProxy
+            end
+          end
+        end
+
+        describe "#url" do
+          let(:file_proxy) { FileProxy.fetch! "/uploads/sample.png" }
+
+          context 'given the file exists' do
+            it 'returns Uploader.downloader_path_prefix + file.storage_path' do
+              file_record #ensure its present
+              file_proxy.url.should eq("/files/uploads/sample.png")
+            end
+          end
+
+          context 'given the file proxy is blank' do
+            it 'returns nil' do
+              file_proxy.url.should be_nil
             end
           end
         end

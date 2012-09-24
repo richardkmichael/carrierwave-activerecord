@@ -15,11 +15,13 @@ module CarrierWave
     class Base
       add_config :active_record_tablename
       add_config :active_record_cache
+      add_config :downloader_path_prefix
 
       configure do |config|
         config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord::StorageProvider'
         config.active_record_tablename         = 'carrier_wave_files'
         config.active_record_cache             = false
+        config.downloader_path_prefix          = '/files'
       end
 
       alias_method :original_cache!, :cache!
@@ -33,6 +35,14 @@ module CarrierWave
         end
 
         original_cache!(new_file)
+      end
+
+      # TODO find a better way to encapsulate this into a configuration module or similar
+      def self.reset_config
+        super
+        configure do |config|
+          config.downloader_path_prefix = "/files"
+        end
       end
     end
   end
