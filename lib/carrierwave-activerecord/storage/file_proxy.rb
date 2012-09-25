@@ -32,6 +32,20 @@ module CarrierWave
           file.nil?
         end
 
+        ##
+        # Remove the file from database
+        #
+        # ===Returns
+        #
+        # [Boolean] true for success or false
+        def delete
+          if file
+            file.destroy
+          else
+            false
+          end
+        end
+
         def old_retrieve_code
           # begin
           file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(identifier)

@@ -93,6 +93,31 @@ module CarrierWave
         describe "#blank?" do
           it 'must be tested'
         end
+
+        describe '#delete' do
+          context 'given the proxy is associated with a file' do
+            before :each do
+              file_record # ensure it's present
+              @proxy = FileProxy.fetch!("/uploads/sample.png")
+            end
+
+            it 'deletes the record' do
+              expect { @proxy.delete }.to change( File, :count).by(-1)
+            end
+
+            it 'returns true' do
+              @proxy.delete.should be_true
+            end
+
+          end
+
+          context "given the proxy isn't associated with a file" do
+            it 'does nothing' do
+              proxy = FileProxy.fetch!("non-existing-identifier")
+              proxy.delete.should be_false
+            end
+          end
+        end
       end
     end
   end # Storage
