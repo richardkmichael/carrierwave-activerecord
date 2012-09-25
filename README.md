@@ -62,8 +62,8 @@ TODO Example
 
 It defaults to "/files".
 
-The storage path is a property of each file in th db. It is build from the store
-path and the filename.
+The storage path is a property of each file in the db. It is defined by calling
+the identifier method on the uploader.
 
 ## Contributing
 
@@ -72,3 +72,6 @@ path and the filename.
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+If you like the work we've done so far and you encounter some issues please
+invest some of your time to enhance the code and create a pull request.
