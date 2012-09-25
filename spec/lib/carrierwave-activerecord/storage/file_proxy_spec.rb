@@ -89,6 +89,10 @@ module CarrierWave
             end
           end
         end
+
+        describe "#blank?" do
+          it 'must be tested'
+        end
       end
     end
   end # Storage

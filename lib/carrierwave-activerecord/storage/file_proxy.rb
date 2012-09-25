@@ -28,6 +28,10 @@ module CarrierWave
           self.new(file_record)
         end
 
+        def blank?
+          file.nil?
+        end
+
         def old_retrieve_code
           # begin
           file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(identifier)
