@@ -4,35 +4,29 @@ require 'active_record'
 require 'digest'
 
 module CarrierWave
+
   module Storage
 
     class ActiveRecord < Abstract
 
-      # Use the SHA1 (not the filename) as the identifier stored in the mounted
-      # column; this permits duplicate file names.  Normally, carrierwave
-      # overwrites an existing file when a new file with the same name is
-      # uploaded (even if handled by different uploaders), because 'store_dir'
-      # defaults to '/public/uploads'.  The upload path may be configured per
-      # uploader by defining 'store_dir'.
-
-      # We can't use "model.id"; two ids may collide because the storage is not
-      # [necessarily] specific to a model.
-
-      # class House < AR::Base
-      #   attr_accessor :photo
-      #   mount_uploader :photo, PhotoUploader
-      # end
-
-      # class Person < AR::Base
-      #   attr_accessor :mugshot
-      #   mount_uploader :mugshot, MugshotUploader
-      # end
-
-      # @house.id  # => 42
-      # @person.id # => 42
+      # CarrierWave overwrites an existing file when a new file with the same
+      # name is uploaded (even if handled by different uploaders), because
+      # 'store_dir' defaults to '/public/uploads'.  NOTE: The storage path may
+      # be configured per uploader by defining 'store_dir'.  However, because
+      # we store in the database, this is not particularly helpful.
+      #
+      # All uploaded files are stored together in a single table.  This means
+      # we cannot use filenames or model ID's as the identifier, e.g. there
+      # could be many files with the same name uploaded; and one model could
+      # have multiple uploaded files; two models could have the same ID such as
+      # @house.id = @book.id = 42.
+      #
+      # Override CarrierWave::Storage::Abstract#identifier() (which returns
+      # @uploader.filename) to use a SHA1 of the filename, time and random
+      # number (to avoid time collisions) as the identifier stored in the
+      # mounted column.
 
       def identifier
-        # FIXME: identifier ||= "#{model.name} #{model.id}" for column value readability?
         @identifier ||= Digest::SHA1.hexdigest "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
       end
 
@@ -47,18 +41,18 @@ module CarrierWave
       #
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
-      def store!(sanitized_file)
+      def store! sanitized_file
 
         attributes = { :original_filename => sanitized_file.original_filename,
                        :content_type      => sanitized_file.content_type,
-                       :identifier        => self.identifier,
                        :extension         => sanitized_file.extension,
                        :size              => sanitized_file.size,
-                       :data              => sanitized_file.read }
+                       :data              => sanitized_file.read,
+                       :identifier        => identifier }
 
-        # TODO: Error handling in case the migration has not been run.
+        # TODO: Error handling in case the migration has not been run?
         # begin
-        CarrierWave::Storage::ActiveRecord::File.create!(attributes)
+        CarrierWave::Storage::ActiveRecord::File.create! attributes
         # rescue <no such table error> => e
         #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_table')
         # end
@@ -75,10 +69,10 @@ module CarrierWave
       #
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
-      def retrieve!(identifier)
+      def retrieve! identifier
 
         # begin
-        file = CarrierWave::Storage::ActiveRecord::File.find_by_identifier!(identifier)
+        file = CarrierWave::Storage::ActiveRecord::File.find_by_identifier! identifier
 
         #  The URL could be saved during store!(), but then if the mount point
         #  changes, the DB records would need to be re-written (messy).
@@ -91,10 +85,10 @@ module CarrierWave
         #        ex. ArticleFile => '/article_files/'
 
         # This hints the filename in the URL. Unnecessary (we only need :id), but helpful.
-        file.url = '/' + [ uploader.model.class.to_s.downcase.pluralize,
-                           uploader.model.id,
-                           uploader.mounted_as.to_s,
-                           file.original_filename ].join('/')
+#       file.url = '/' + [ uploader.model.class.to_s.downcase.pluralize,
+#                          uploader.model.id,
+#                          uploader.mounted_as.to_s,
+#                          file.original_filename ].join('/')
 
         file
 
@@ -104,16 +98,9 @@ module CarrierWave
         # end
       end
 
-      # class File
-      #   def initialize file
-      #     attributes = read_file_attributes file
-      #     @file = ::ActiveRecord::Base.create attributes
-      #   end
-      # end
-
       class File < ::ActiveRecord::Base
 
-        # TODO: Duck-type CarrierWave::SanitizedFile, therefore need methods:
+        # TODO: Duck-type CarrierWave::SanitizedFile?  Therefore, we need methods:
         #
         #   basename
         #   path              # => directory storage .. ?
@@ -134,10 +121,10 @@ module CarrierWave
                         :size,
                         :data
 
-        # Remove the file from service.
+        # Remove the file from the storage service.
         alias_method :delete, :destroy
 
-        # Read content of file from service.
+        # Read content of file from the storage service.
         alias_attribute :read, :data
 
         # A url to the file, if available.  Set before the file is returned to CarrierWave.

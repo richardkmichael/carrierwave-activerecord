@@ -19,9 +19,9 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = CarrierWave::ActiveRecord::VERSION
 
-  # TODO: Add dependency versions (dev happens with 0.6.2).
-  gem.add_dependency 'carrierwave'
-  gem.add_dependency 'activerecord'
+  # TODO: Add dependency versions.
+  gem.add_runtime_dependency 'carrierwave' # FIXME: Should we declare CW as a dep at all?
+  gem.add_runtime_dependency 'activerecord'
 
   gem.add_development_dependency 'sqlite3'
 end
