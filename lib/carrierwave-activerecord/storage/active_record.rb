@@ -1,13 +1,18 @@
 # -*- encoding: utf-8 -*-
-
 require 'active_record'
 require 'digest'
 
 module CarrierWave
-
   module Storage
-
     class ActiveRecord < Abstract
+
+      # From Abstract
+      #   attr_reader :uploader
+      #   def initialize(uploader)  ; @uploader = uploader ; end
+      #   def identifier            ; uploader.filename    ; end
+      #   def store!(file)          ;                        end
+      #   def retrieve!(identifier) ;                        end
+
 
       # CarrierWave overwrites an existing file when a new file with the same
       # name is uploaded (even if handled by different uploaders), because
@@ -17,9 +22,9 @@ module CarrierWave
       #
       # All uploaded files are stored together in a single table.  This means
       # we cannot use filenames or model ID's as the identifier, e.g. there
-      # could be many files with the same name uploaded; and one model could
-      # have multiple uploaded files; two models could have the same ID such as
-      # @house.id = @book.id = 42.
+      # could be many files with the same name uploaded; or, one model could
+      # have multiple uploaded files; or, two models could have the same ID
+      # such as @house.id = @book.id = 42.
       #
       # Override CarrierWave::Storage::Abstract#identifier() (which returns
       # @uploader.filename) to use a SHA1 of the filename, time and random
@@ -96,6 +101,7 @@ module CarrierWave
         # rescue ActiveRecord::RecordNotFound => e
         #   raise CarrierWave::Storage::Error, I18n.translate(:'errors.messages.storage.active_record.no_record')
         # end
+
       end
 
       class File < ::ActiveRecord::Base
@@ -150,6 +156,5 @@ module CarrierWave
         end
       end # File
     end # ActiveRecord
-
   end # Storage
 end # CarrierWave
