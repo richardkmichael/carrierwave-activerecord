@@ -58,6 +58,19 @@ class CarrierWave::Storage::ActiveRecord::FileTest < MiniTest::Unit::TestCase
   end
 
   def test_file_has_a_url
+  end
 
+  def test_model_can_have_a_file
+    # Test create when a file is uploaded.
+  end
+
+  def test_model_can_not_have_a_file
+    # Test create when no file is uploaded.
+  end
+
+  def test_file_can_be_deleted
+  end
+
+  def test_downloaded_file_has_correct_content
   end
 end
