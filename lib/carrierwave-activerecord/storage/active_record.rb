@@ -32,7 +32,8 @@ module CarrierWave
       # mounted column.
 
       def identifier
-        @identifier ||= Digest::SHA1.hexdigest "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
+        token = "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
+        @identifier ||= Digest::SHA1.hexdigest token
       end
 
       ##
@@ -47,15 +48,9 @@ module CarrierWave
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
       def store! sanitized_file
-
-        attributes = { :filename     => sanitized_file.original_filename,
-                       :content_type => sanitized_file.content_type,
-                       :extension    => sanitized_file.extension,
-                       :size         => sanitized_file.size,
-                       :data         => sanitized_file.read,
-                       :identifier   => identifier }
-
-        CarrierWave::Storage::ActiveRecord::File.create! attributes
+        engine_file = CarrierWave::Storage::ActiveRecord::File.new(uploader)#, uploader.store_path)
+        engine_file.write sanitized_file
+        engine_file
       end
 
       ##
@@ -70,13 +65,44 @@ module CarrierWave
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
       def retrieve! identifier
-        CarrierWave::Storage::ActiveRecord::File.find_by_identifier! identifier
+        # CarrierWave::Storage::ActiveRecord::File.find_by_identifier! identifier
+        CarrierWave::Storage::ActiveRecord::File.new(uploader)#, uploader.store_path(identifier))
       end
 
-      class File < ::ActiveRecord::Base
-        self.table_name = 'carrier_wave_files'
+      class File
 
-        attr_accessible :identifier, :filename, :data
+        def initialize(uploader)#, path)
+          @uploader = uploader
+#         @path = path
+        end
+
+        def write(sanitized_file)
+          attributes = { :identifier   => @uploader.identifier,
+                         :filename     => sanitized_file.original_filename,
+                         :data         => sanitized_file.read }
+
+          # This should duck-type CW::SanitizedFile.
+          ActiveRecordFile.create! attributes
+        end
+
+        def read
+          engine_file = ActiveRecordFile.find_by_identifier!(@uploader.identifier)
+          engine_file.data
+        end
+
+        def url
+          # binding.pry
+          "#{self.class} FIXME: File should define a URL."
+        end
+
+        private
+
+        class ActiveRecordFile < ::ActiveRecord::Base
+          self.table_name = 'carrier_wave_files'
+
+          attr_accessible :identifier, :filename, :data
+        end
+
       end # File
 
     end # ActiveRecord

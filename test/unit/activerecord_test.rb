@@ -73,4 +73,7 @@ class CarrierWave::Storage::ActiveRecord::FileTest < MiniTest::Unit::TestCase
 
   def test_downloaded_file_has_correct_content
   end
+
+  def test_missing_file_causes_exception
+  end
 end
