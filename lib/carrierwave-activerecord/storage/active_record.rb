@@ -32,8 +32,11 @@ module CarrierWave
       # mounted column.
 
       def identifier
+#       binding.pry
         token = "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
-        @identifier ||= Digest::SHA1.hexdigest token
+
+        # Can't call `uploader.identifier` because CW::U::Base#identifer proxies to us!
+        uploader.model.read_uploader(uploader.mounted_as) || Digest::SHA1.hexdigest(token)
       end
 
       ##
@@ -70,39 +73,56 @@ module CarrierWave
       end
 
       class File
-
-        def initialize(uploader)#, path)
+        def initialize(uploader)
           @uploader = uploader
-#         @path = path
         end
 
         def write(sanitized_file)
-          attributes = { :identifier   => @uploader.identifier,
+          attributes = { :identifier   => identifier,
                          :filename     => sanitized_file.original_filename,
                          :data         => sanitized_file.read }
 
-          # This should duck-type CW::SanitizedFile.
+          # Should this duck-type CW::SanitizedFile?
           ActiveRecordFile.create! attributes
         end
 
         def read
-          engine_file = ActiveRecordFile.find_by_identifier!(@uploader.identifier)
           engine_file.data
         end
 
+        def filename
+          engine_file.filename
+        end
+        alias :original_filename :filename
+
         def url
-          # binding.pry
-          "#{self.class} FIXME: File should define a URL."
+          if defined? ::Rails
+            route_helpers = ::Rails.application.routes.url_helpers
+            path_method_name = "#{@uploader.model.class.to_s.downcase}_path"
+
+            url = route_helpers.send(path_method_name, @uploader.model)
+            url << "/#{@uploader.mounted_as.to_s}"
+          else
+            'Only Rails route conventions are supported.  Define default_url in your uploader class.'
+          end
         end
 
-        private
+      private
+
+        def engine_file
+          @engine_file ||= ActiveRecordFile.find_by_identifier! identifier
+        end
+
+        # @uploader.identifier will Proxy to filename(), which can call us again.
+        def identifier
+          @uploader.model.read_uploader(@uploader.mounted_as)
+        end
 
         class ActiveRecordFile < ::ActiveRecord::Base
           self.table_name = 'carrier_wave_files'
 
           attr_accessible :identifier, :filename, :data
-        end
-
+        end # ActiveRecordFile
       end # File
 
     end # ActiveRecord

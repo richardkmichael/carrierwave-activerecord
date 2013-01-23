@@ -25,6 +25,18 @@ require 'carrierwave'
 #   DataMapper::Model.append_extensions(CarrierWave::DataMapper)
 #   Mongoid::Document::ClassMethods.send(:include, CarrierWave::Mongoid)
 
+# NOTE: Fix the store module here, if not in CW directly.
+#       FIXME: Add an <Uploader>.#{column}_filename method too?
+# module CarrierWave
+#   module Uploader
+#     module Store
+#       def filename
+#         file.respond_to?(:filename) : file.filename : @filename
+#       end
+#     end
+#   end
+# end
+
 CarrierWave::Storage.autoload :ActiveRecord, 'carrierwave-activerecord/storage/active_record'
 
 class CarrierWave::Uploader::Base

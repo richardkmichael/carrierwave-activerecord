@@ -58,6 +58,7 @@ class CarrierWave::Storage::ActiveRecord::FileTest < MiniTest::Unit::TestCase
   end
 
   def test_file_has_a_url
+    # Test if Rails, test without Rails.
   end
 
   def test_model_can_have_a_file
