@@ -1,0 +1,2 @@
+Some example content written into a test file.
+And another line.

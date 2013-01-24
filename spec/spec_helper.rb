@@ -2,17 +2,9 @@
 
 require 'rubygems'
 require 'bundler/setup'
-require 'minitest/autorun'
 require 'carrierwave-activerecord'
-
-# ActiveRecord::Base.connection do |database|
-#   database = 'sqlite3::memory' # Keep tests fast.
-#   # TODO: database = 'postgres' --> but really, we should only use AR's API and it should handle the DB for us.
-# end
-
-# ActiveRecord::Schema.load do
-#   # Create CW storage tables.
-# end
+require 'sqlite3'
+require 'database_setup'
 
 # def file_path( *paths )
 #   File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))

@@ -1,6 +1,10 @@
-# Carrierwave::Activerecord
+# Carrierwave::ActiveRecord
 
-TODO: Write a gem description
+CarrierWave::ActiveRecord is a CarrierWave plugin which provides a
+storage engine to store file data in your ActiveRecord data store.
+
+It relies on the ActiveRecord API to be database agnostic.  However, at
+this time, it is tested against only SQLite.
 
 ## Installation
 
@@ -18,18 +22,40 @@ Or install manually:
 
     $ gem install carrierwave-activerecord
 
+## Usage
+
+To use the ActiveRecord store, add the following to your uploader:
+
+    storage :active_record
+
 ### Prepare the database
 
-$ rails g migration create_carrier_wave_files
+To store the images, the gem assumes existence of a database table named
+`carrier_wave_files` with the following columns:
+
+* original_filename: string
+* identifier: string
+* content_type: string
+* extension: string
+* filename: string
+* size: integer
+* data: binary
+
+### Rails
+
+If you do not have a suitable table, the following Rails migration can be used:
+
+    $ rails g migration create_carrier_wave_files
 
 ```ruby
 class CreateCarrierWaveFiles < ActiveRecord::Migration
   def change
     create_table :carrier_wave_files do |t|
       t.string :original_filename
+      t.string :identifier
       t.string :content_type
       t.string :extension
-      t.string :identifier
+      t.string :filename
       t.string :size
       t.binary :data
 
@@ -39,21 +65,45 @@ class CreateCarrierWaveFiles < ActiveRecord::Migration
 end
 ```
 
-## Usage
+### ActiveRecord connection
 
-TODO: Write usage instructions here
+If you are already using ActiveRecord as your ORM, the engine will
+use the existing connection.  Thus, it will work in Rails without any
+additional configuration.
 
-## Contributing
+If you are not using ActiveRecord as your ORM, you will need to setup
+the connection to the database.
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### Serving files
+
+The gem assumes there is a web service to handle incoming GET HTTP
+requests for the files. For example,
+
+`GET /files/images/sample.png HTTP/1.1`
+
+The file URL is composed of two parts:
+
+* the `downloader_path_prefix`, common to all files
+* the `storage_path`, particular to each file
+
+The gem provides a new `downloader_path_prefix` configuration option
+available to `CarrierWave::Uploader::Base`, the default is `/files`.
+
+TODO: Fix the storage_path, it's really the identifier, so call it such.
+The `storage_path` is a property of each file.  It is defined by calling
+the identifier method on the uploader.
 
 
-## How to add a storage engine
+## Further reading
 
+### Example project
+
+The following example and test project tracks the gem:
+https://github.com/richardkmichael/carrierwave-activerecord-project
+
+### How to add a storage engine
+
+TODO: Link to the wiki page
 
 [3] pry(#<CarrierWave::Mount::Mounter>)> self
 => #<CarrierWave::Mount::Mounter:0x00000102b67aa8
@@ -62,6 +112,14 @@ TODO: Write usage instructions here
  @options={},
  @processing_error=nil,
  @record=
-  #<ArticleFile id: 5, file: "Screen_shot_2012-05-30_at_1.30.08_PM.png", article_id: 4, created_at: "2012-06-02 11:42:10", updated_at: "2012-06-02 11:42:10">,
+  #<ArticleFile id: 5, file: "my_uploaded_file.txt", article_id: 4, created_at: "2012-06-02 11:42:10", updated_at: "2012-06-02 11:42:10">,
  @uploader=,
  @uploader_options={:mount_on=>nil}>
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
