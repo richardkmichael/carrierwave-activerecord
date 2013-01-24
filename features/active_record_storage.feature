@@ -4,13 +4,12 @@ Feature: Uploader with ActiveRecord storage
   I want uploaded files to be stored in the database
 
   Background:
-    Given an uploader class that uses the 'active_record' storage
-    And an instance of that class
+    Given an uploader using 'active_record' storage
 
-  Scenario: store a file
-    When I store the file 'fixtures/bork.txt'
-    Then there should be one file in the database named 'bork.txt'
-    And that file should be identical to the file at 'fixtures/bork.txt'
+  Scenario: Store a file
+    When I upload the fixture file 'bork.txt'
+    Then the file should be stored in the database
+    And the database file should be identical to the fixture file
 
 # Scenario: store two files in succession
 #   When I store the file 'fixtures/bork.txt'

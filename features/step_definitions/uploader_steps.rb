@@ -1,37 +1,25 @@
-Given /^an uploader class that uses the 'active_record' storage$/ do
+Given(/^an uploader using 'active_record' storage$/) do
   @uploader_class = Class.new(CarrierWave::Uploader::Base)
-  @uploader_class.class_eval do
-    storage :active_record
-  end
-end
+  @uploader_class.storage = :active_record
+  @uploader_class.delete_tmp_file_after_storage = false
 
-Given /^an instance of that class$/ do
   @uploader = @uploader_class.new
 end
 
-def ensure_dummy_file_present file_path
-  f = File.open(file_path,"w")
-  f.write(<<FILE)
-Some example content written into a test file.
-And another line.
-FILE
-  f.close
+When(/^I upload the fixture file '(\w+\.\w+)'$/) do |filename|
+  @file_path = "features/fixtures/#{filename}"
+  @file = File.open @file_path,'r'
+
+  @uploader.store! @file
+  @identifier = @uploader.identifier
 end
 
-When /^I store the file 'fixtures\/(\w+\.\w+)'$/ do |filename|
-  file_path = "features/fixtures/#{filename}"
-  ensure_dummy_file_present file_path
-  f = File.open(file_path,'r')
-  @uploader.store!(f)
+Then(/^the file should be stored in the database$/) do
+  @stored_file = CarrierWave::Storage::ActiveRecord::File.fetch! @identifier
+  @stored_file.file.should_not be_nil
 end
 
-Then /^there should be one file in the database named '(\w+\.\w+)'$/ do |filename|
-  CarrierWave::Storage::ActiveRecord::File.find_by_filename(filename).should_not be_nil
-end
-
-Then /^that file should be identical to the file at 'fixtures\/(\w+\.\w+)'$/ do |filename|
-  file = CarrierWave::Storage::ActiveRecord::File.find_by_filename(filename)
-  file_path = "features/fixtures/#{filename}"
-  ensure_dummy_file_present file_path
-  file.data.should == File.open(file_path, "r") { |f| f.read }
+Then(/^the database file should be identical to the fixture file$/) do
+  file = File.open @file_path,'r'
+  @stored_file.file.data.should == file.read
 end
