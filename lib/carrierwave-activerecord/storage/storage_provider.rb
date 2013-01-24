@@ -16,7 +16,7 @@ module CarrierWave
         # [CarrierWave::Storage::ActiveRecord::File] the stored file
         #
         def store!(file)
-          CarrierWave::Storage::ActiveRecord::FileProxy.create!(file, uploader.identifier)
+          CarrierWave::Storage::ActiveRecord::File.create!(file, uploader.identifier)
         end
 
         ##
@@ -31,7 +31,7 @@ module CarrierWave
         # [CarrierWave::Storage::ActiveRecord::File] the stored file
         #
         def retrieve!(identifier)
-          FileProxy.fetch!(identifier)
+          File.fetch!(identifier)
         end
 
         def identifier

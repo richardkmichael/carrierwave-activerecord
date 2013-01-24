@@ -6,7 +6,6 @@ module CarrierWave
     module ActiveRecord
       autoload :VERSION,          'carrierwave-activerecord/storage/version'
       autoload :StorageProvider,  'carrierwave-activerecord/storage/storage_provider'
-      autoload :FileProxy,         'carrierwave-activerecord/storage/file_proxy'
       autoload :File,             'carrierwave-activerecord/storage/file'
     end
   end
