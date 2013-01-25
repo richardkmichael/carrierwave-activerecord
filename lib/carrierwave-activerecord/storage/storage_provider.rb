@@ -3,6 +3,7 @@
 module CarrierWave
   module Storage
     module ActiveRecord 
+
       class StorageProvider < Abstract
         ##
         # Store a file
@@ -15,8 +16,8 @@ module CarrierWave
         #
         # [CarrierWave::Storage::ActiveRecord::File] the stored file
         #
-        def store!(file)
-          CarrierWave::Storage::ActiveRecord::File.create!(file, uploader.identifier)
+        def store! sanitized_file
+          File.create! sanitized_file, uploader.identifier
         end
 
         ##
@@ -30,14 +31,18 @@ module CarrierWave
         #
         # [CarrierWave::Storage::ActiveRecord::File] the stored file
         #
-        def retrieve!(identifier)
-          File.fetch!(identifier)
+        def retrieve! identifier
+          File.fetch! identifier
         end
 
         def identifier
-          "/#{uploader.store_dir}/#{uploader.filename}"
+          token = "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
+
+          # `uploader.identifier` is circular because CW::U::B#identifier proxies to us.
+          uploader.model.read_uploader(uploader.mounted_as) || Digest::SHA1.hexdigest(token)
         end
-      end 
+      end # StorageProvider
+
     end # ActiveRecord
   end # Storage
 end # CarrierWave

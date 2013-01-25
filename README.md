@@ -84,14 +84,10 @@ requests for the files. For example,
 The file URL is composed of two parts:
 
 * the `downloader_path_prefix`, common to all files
-* the `storage_path`, particular to each file
+* the `identifier`, particular to each file
 
 The gem provides a new `downloader_path_prefix` configuration option
 available to `CarrierWave::Uploader::Base`, the default is `/files`.
-
-TODO: Fix the storage_path, it's really the identifier, so call it such.
-The `storage_path` is a property of each file.  It is defined by calling
-the identifier method on the uploader.
 
 
 ## Further reading

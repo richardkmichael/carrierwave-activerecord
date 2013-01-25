@@ -12,16 +12,18 @@ module CarrierWave
       describe File do
 
         def create_a_file_in_the_database
-          ActiveRecordFile.create! @file_properties.merge!({ storage_path: identifier })
+          ActiveRecordFile.create! @file_properties.merge!({ identifier: identifier })
         end
-
-        let(:identifier) { '/uploads/sample.png' }
 
         # In the description of an "it ... do", we can't use a let.  In the
         # block of an "it ... do", we can't use an instance variable.  This
         # makes it hard to DRY out the spec.
         # @provider_file_class = ::CarrierWave::Storage::ActiveRecord::File
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
+
+        # TODO: Set to a SHA1; it will matter once validations are on
+        #       the ARFile and constraints are in the database.
+        let(:identifier) { '/uploads/sample.png' }
 
         before :each do
           @file_properties = { filename:          'sample.png',
@@ -62,9 +64,9 @@ module CarrierWave
             end
           end
 
-          it 'sets the storage path on the file' do
+          it 'sets the identifier on the file' do
             stored_file = File.create!(file_to_store, identifier).file
-            stored_file.storage_path.should eq(identifier)
+            stored_file.identifier.should eq(identifier)
           end
         end
 
@@ -75,6 +77,8 @@ module CarrierWave
 
           before :each do
             @stored_file = create_a_file_in_the_database
+            # TODO: Assert the file exists, or rely on to-be-written
+            #       tests for ActiveRecordFile.
           end
 
           describe '#fetch!(identifier)' do
@@ -88,7 +92,7 @@ module CarrierWave
           end
 
           describe '#url' do
-            it 'returns Uploader.downloader_path_prefix + file.storage_path' do
+            it 'returns Uploader.downloader_path_prefix + file.identifier' do
               retrieved_file.url.should eq('/files' + identifier)
             end
           end

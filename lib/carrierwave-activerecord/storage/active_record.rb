@@ -4,7 +4,7 @@ require 'digest'
 
 module CarrierWave
   module Storage
-    class ActiveRecord < Abstract
+    class ActiveRecordOld < Abstract
 
       # Inherited from Abstract:
       #   attr_reader :uploader
@@ -32,10 +32,9 @@ module CarrierWave
       # mounted column.
 
       def identifier
-#       binding.pry
         token = "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
 
-        # Can't call `uploader.identifier` because CW::U::Base#identifer proxies to us!
+        # Can't call `uploader.identifier` because CW::U::Base#identifier proxies to us!
         uploader.model.read_uploader(uploader.mounted_as) || Digest::SHA1.hexdigest(token)
       end
 
@@ -125,6 +124,6 @@ module CarrierWave
         end # ActiveRecordFile
       end # File
 
-    end # ActiveRecord
+    end # ActiveRecordOld
   end # Storage
 end # CarrierWave
