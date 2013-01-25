@@ -51,9 +51,9 @@ module CarrierWave
       # [CarrierWave::Storage::ActiveRecord::File] the stored file
       #
       def store! sanitized_file
-        engine_file = CarrierWave::Storage::ActiveRecord::File.new(uploader)#, uploader.store_path)
-        engine_file.write sanitized_file
-        engine_file
+        provider_file = CarrierWave::Storage::ActiveRecord::File.new(uploader)#, uploader.store_path)
+        provider_file.write sanitized_file
+        provider_file
       end
 
       ##
@@ -87,11 +87,11 @@ module CarrierWave
         end
 
         def read
-          engine_file.data
+          provider_file.data
         end
 
         def filename
-          engine_file.filename
+          provider_file.filename
         end
         alias :original_filename :filename
 
@@ -109,8 +109,8 @@ module CarrierWave
 
       private
 
-        def engine_file
-          @engine_file ||= ActiveRecordFile.find_by_identifier! identifier
+        def provider_file
+          @provider_file ||= ActiveRecordFile.find_by_identifier! identifier
         end
 
         # @uploader.identifier will Proxy to filename(), which can call us again.

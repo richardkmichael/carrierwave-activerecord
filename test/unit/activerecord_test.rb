@@ -21,11 +21,11 @@ class CarrierWave::Storage::ActiveRecordTest < MiniTest::Unit::TestCase
     assert_equal @file.filename, 'tiger.jpg', 'Setup failed: incorrect fixture file name.'
 
     @uploader = AvatarUploader.new(Avatar, :image)
-    @engine   = CarrierWave::Storage::ActiveRecord.new @uploader
+    @provider   = CarrierWave::Storage::ActiveRecord.new @uploader
   end
 
   def test_store_writes_the_file_data_to_the_database
-    stored_file = @engine.store! @file
+    stored_file = @provider.store! @file
     assert_instance_of CarrierWave::Storage::ActiveRecord::File, stored_file
 
     select_data_statement = %Q|
@@ -40,9 +40,9 @@ class CarrierWave::Storage::ActiveRecordTest < MiniTest::Unit::TestCase
   end
 
   def test_retrieve_reads_the_file_data_from_the_database
-    @engine.store! @file
+    @provider.store! @file
 
-    retrieved_file = @engine.retrieve! @file.identifier
+    retrieved_file = @provider.retrieve! @file.identifier
     assert_instance_of CarrierWave::Storage::ActiveRecord::File, retrieved_file
   end
 end

@@ -1,7 +1,7 @@
 # Carrierwave::ActiveRecord
 
-CarrierWave::ActiveRecord is a CarrierWave plugin which provides a
-storage engine to store file data in your ActiveRecord data store.
+CarrierWave::ActiveRecord is a CarrierWave plugin which permits it to use
+ActiveRecord as the storage provider for file data.
 
 It relies on the ActiveRecord API to be database agnostic.  However, at
 this time, it is tested against only SQLite.
@@ -67,9 +67,9 @@ end
 
 ### ActiveRecord connection
 
-If you are already using ActiveRecord as your ORM, the engine will
-use the existing connection.  Thus, it will work in Rails without any
-additional configuration.
+If you are already using ActiveRecord as your ORM, the storage provider
+will use the existing connection.  Thus, it will work in Rails without
+any additional configuration.
 
 If you are not using ActiveRecord as your ORM, you will need to setup
 the connection to the database.
@@ -101,7 +101,7 @@ the identifier method on the uploader.
 The following example and test project tracks the gem:
 https://github.com/richardkmichael/carrierwave-activerecord-project
 
-### How to add a storage engine
+### How to add a storage provider
 
 TODO: Link to the wiki page
 
