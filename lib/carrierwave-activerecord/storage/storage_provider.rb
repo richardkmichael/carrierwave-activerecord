@@ -6,6 +6,8 @@ module CarrierWave
 
       class StorageProvider < Abstract
 
+        CUSTOM_URL = 'When not using Rails, you must define default_url in your uploader class.'
+
         # Inherited from Abstract:
         #   attr_reader :uploader
         #   def initialize(uploader)  ; @uploader = uploader ; end
@@ -61,16 +63,18 @@ module CarrierWave
         end
 
         def compute_url
-          CarrierWave::Uploader::Base.downloader_path_prefix + @file.identifier if @file
-#         if defined? ::Rails
-#           route_helpers = ::Rails.application.routes.url_helpers
-#           path_method_name = "#{@uploader.model.class.to_s.downcase}_path"
+          if defined? ::Rails.application.routes.url_helpers
+            model = uploader.model
 
-#           url = route_helpers.send(path_method_name, @uploader.model)
-#           url << "/#{@uploader.mounted_as.to_s}"
-#         else
-#           'Only Rails route conventions are supported.  Define default_url in your uploader class.'
-#         end
+            route_helpers = ::Rails.application.routes.url_helpers
+            path_method_name = "#{model.class.to_s.downcase}_path"
+
+            url = route_helpers.send(path_method_name, model)
+            url << "/#{uploader.mounted_as.to_s}"
+          else
+            CUSTOM_URL
+            # CarrierWave::Uploader::Base.downloader_path_prefix + @file.identifier if @file
+          end
         end
 
       end # StorageProvider

@@ -41,6 +41,22 @@ module CarrierWave
                                   read:              1337,
                                   data:              1337 } }
 
+        let(:mock_rails_url_helpers) do
+          article = mock 'Article 1'
+          article.stub_chain('class.to_s') { 'Article' } # Avoid dynamic creation of a named class.
+
+          url_helpers = mock 'Rails URL helpers module'
+          url_helpers.should_receive(:article_path).with(article).and_return('/articles/1')
+
+          ::Rails = mock 'Rails'
+          ::Rails.stub_chain('application.routes.url_helpers') { url_helpers }
+
+          uploader.should_receive(:model).and_return(article)
+          uploader.should_receive(:mounted_as).and_return(:file)
+        end
+
+        let(:rails_url)            { '/articles/1/file' }
+        let(:storage_provider_url) { StorageProvider::CUSTOM_URL }
 
         describe '#store!(file)' do
 
@@ -58,8 +74,17 @@ module CarrierWave
             storage.store!(file)
           end
 
-          it 'sets the URL property on the returned file' do
-            storage.store!(file).url.should eq('/files' + identifier)
+          context 'with ::Rails' do
+            it 'sets the URL property on the returned file' do
+              mock_rails_url_helpers
+              storage.store!(file).url.should eq rails_url
+            end
+          end
+
+          context 'without ::Rails' do
+            it 'sets the file URL to a helpful message' do
+              storage.store!(file).url.should eq storage_provider_url
+            end
           end
         end
 
@@ -78,8 +103,17 @@ module CarrierWave
             storage.retrieve!(identifier).should be_kind_of File
           end
 
-          it 'sets the URL property on the returned file' do
-            storage.retrieve!(identifier).url.should eq('/files' + identifier)
+          context 'with ::Rails' do
+            it 'sets the URL property on the returned file' do
+              mock_rails_url_helpers
+              storage.retrieve!(identifier).url.should eq rails_url
+            end
+          end
+
+          context 'without ::Rails' do
+            it 'sets the file URL to a helpful message' do
+              storage.retrieve!(identifier).url.should eq storage_provider_url
+            end
           end
         end
 
