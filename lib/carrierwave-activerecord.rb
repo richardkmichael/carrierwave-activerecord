@@ -45,6 +45,7 @@ module CarrierWave
       autoload :VERSION,          'carrierwave-activerecord/storage/version'
       autoload :StorageProvider,  'carrierwave-activerecord/storage/storage_provider'
       autoload :File,             'carrierwave-activerecord/storage/file'
+      autoload :ActiveRecordFile, 'carrierwave-activerecord/storage/active_record_file'
     end
   end
 
