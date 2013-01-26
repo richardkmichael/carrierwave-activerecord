@@ -29,7 +29,9 @@ module CarrierWave
 
         attr_reader :file
 
-        def initialize file
+        attr_accessor :url
+
+        def initialize(file = nil)
           @file = file
         end
 
@@ -45,26 +47,10 @@ module CarrierWave
           end
         end
 
-        def url
-          CarrierWave::Uploader::Base.downloader_path_prefix + file.identifier if file
+        def identifier
+          file.identifier
         end
       end # File
-
-      # TODO: Move to active_record_file.rb
-      class ActiveRecordFile < ::ActiveRecord::Base
-        self.table_name = 'carrier_wave_files'
-
-        alias_method    :delete, :destroy
-        alias_attribute :read, :data
-
-        attr_accessible :original_filename,
-                        :content_type,
-                        :extension,
-                        :filename,
-                        :size,
-                        :data,
-                        :identifier
-      end # ActiveRecordFile
 
     end # ActiveRecord
   end # Storage

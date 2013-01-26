@@ -26,3 +26,9 @@ require 'database_setup'
 #     end
 #   end
 # end
+
+def create_a_file_in_the_database properties
+  active_record_file_class = CarrierWave::Storage::ActiveRecord::ActiveRecordFile
+
+  active_record_file_class.create! properties.merge!({ identifier: identifier })
+end

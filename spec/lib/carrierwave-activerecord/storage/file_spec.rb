@@ -11,9 +11,7 @@ module CarrierWave
 
       describe File do
 
-        def create_a_file_in_the_database
-          ActiveRecordFile.create! @file_properties.merge!({ identifier: identifier })
-        end
+        it { should respond_to(:url) }
 
         # In the description of an "it ... do", we can't use a let.  In the
         # block of an "it ... do", we can't use an instance variable.  This
@@ -24,6 +22,14 @@ module CarrierWave
         # TODO: Set to a SHA1; it will matter once validations are on
         #       the ARFile and constraints are in the database.
         let(:identifier) { '/uploads/sample.png' }
+        let(:file_properties) { { filename:          'sample.png',
+                                  original_filename: 'o_sample.png',
+                                  content_type:      'image/png',
+                                  extension:         'png',
+                                  size:              123,
+                                  read:              1337,
+                                  data:              1337 } }
+
 
         before :each do
           @file_properties = { filename:          'sample.png',
@@ -38,8 +44,15 @@ module CarrierWave
         end
 
         describe '#create!(file)' do
-          let(:active_record_file) { mock 'ActiveRecordFile stored.', @file_properties.merge(save: nil) }
-          let(:file_to_store)      { mock 'File to store.',           @file_properties.merge(save: nil) }
+
+          let(:active_record_file) { mock 'ActiveRecordFile stored.', file_properties.merge(save: nil) }
+          let(:file_to_store)      { mock 'File to store.',           file_properties.merge(save: nil) }
+
+          it 'returns a File instance' do
+            ActiveRecordFile.should_receive(:new).and_return(active_record_file)
+            stored_file = File.create!(file_to_store, identifier)
+            stored_file.should be_instance_of File
+          end
 
           it 'creates an ActiveRecordFile instance' do
             ActiveRecordFile.should_receive(:new).and_return(active_record_file)
@@ -59,7 +72,7 @@ module CarrierWave
           it 'initializes the file instance' do
             stored_file = File.create!(file_to_store, identifier)
 
-            @file_properties.each do |property, value|
+            file_properties.each do |property, value|
               stored_file.file.send(property).should eq(value)
             end
           end
@@ -76,9 +89,8 @@ module CarrierWave
           let(:retrieved_file) { File.fetch! identifier }
 
           before :each do
-            @stored_file = create_a_file_in_the_database
-            # TODO: Assert the file exists, or rely on to-be-written
-            #       tests for ActiveRecordFile.
+            @stored_file = create_a_file_in_the_database file_properties
+            ActiveRecordFile.count.should eq(1)
           end
 
           describe '#fetch!(identifier)' do
@@ -88,12 +100,6 @@ module CarrierWave
 
             it 'sets the file property to the file from the database' do
               retrieved_file.file.should eq(@stored_file)
-            end
-          end
-
-          describe '#url' do
-            it 'returns Uploader.downloader_path_prefix + file.identifier' do
-              retrieved_file.url.should eq('/files' + identifier)
             end
           end
 
