@@ -17,15 +17,22 @@ Gem::Specification.new do |gem|
   gem.name          = 'carrierwave-activerecord'
   gem.require_paths = ['lib']
 
-  gem.add_dependency 'carrierwave', '~> 0.8.0'
-  gem.add_dependency 'activerecord', '~> 3.2.2'
+  gem.add_dependency 'carrierwave'
+  gem.add_dependency 'activerecord'
 
-  gem.add_development_dependency 'cucumber', '~> 1.2.1'
-  gem.add_development_dependency 'rspec', '~> 2.11.0'
-  gem.add_development_dependency 'sqlite3', '~> 1.3.6'
-  gem.add_development_dependency 'guard-cucumber', '~> 1.2.0'
-  gem.add_development_dependency 'guard-rspec', '~> 1.2.1'
-  gem.add_development_dependency 'rb-fsevent', '~> 0.9.1'
+  gem.add_development_dependency 'sqlite3'
+  gem.add_development_dependency 'guard-rspec'
+  gem.add_development_dependency 'rb-fsevent'
+
+  # TODO: Guard suggests installing notifiers for each platform, they
+  # will be activated as required by Guard's listen gem.  But, how do we
+  # do `:require => false` in the gemspec?
+  
+  # group :development do
+  #   gem 'rb-inotify', :require => false
+  #   gem 'rb-fsevent', :require => false
+  #   gem 'rb-fchange', :require => false
+  # end
 
   gem.platform = Gem::Platform::RUBY
 
