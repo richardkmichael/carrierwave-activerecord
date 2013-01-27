@@ -3,7 +3,8 @@ module CarrierWave
     module ActiveRecord
 
       class ActiveRecordFile < ::ActiveRecord::Base
-        self.table_name = 'carrier_wave_files'
+
+        self.table_name = CarrierWave::Uploader::Base.active_record_tablename
 
         alias_method    :delete, :destroy
         alias_attribute :read, :data

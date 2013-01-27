@@ -73,8 +73,8 @@ module CarrierWave
 
         describe '#store!(file)' do
 
-          it 'calls File.create!(file, uploader.identifier)' do
-            File.should_receive(:create!).with(file, uploader.identifier).and_call_original
+          it 'calls File.create!(file, identifier)' do
+            File.should_receive(:create!).with(file, identifier).and_call_original
             storage.store! file
           end
 

@@ -2,6 +2,7 @@ require 'active_record'
 require 'carrierwave'
 
 module CarrierWave
+
   module Storage
     module ActiveRecord
       autoload :VERSION,          'carrierwave-activerecord/storage/version'
@@ -15,19 +16,22 @@ module CarrierWave
     class Base
 
       add_config :download_path_prefix
+      add_config :active_record_tablename
 
       configure do |config|
         config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord::StorageProvider'
         config.download_path_prefix            = '/files'
+        config.active_record_tablename         = 'carrier_wave_files'
       end
 
-      # TODO find a better way to encapsulate this into a configuration module or similar
       def self.reset_config
         super
         configure do |config|
-          config.download_path_prefix = '/files'
+          config.download_path_prefix    = '/files'
+          config.active_record_tablename = 'carrier_wave_files'
         end
       end
     end # Base
   end # Uploader
+
 end # CarrierWave
