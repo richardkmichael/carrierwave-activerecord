@@ -14,18 +14,18 @@ module CarrierWave
   module Uploader
     class Base
 
-      add_config :downloader_path_prefix
+      add_config :download_path_prefix
 
       configure do |config|
         config.storage_engines[:active_record] = 'CarrierWave::Storage::ActiveRecord::StorageProvider'
-        config.downloader_path_prefix          = '/files'
+        config.download_path_prefix            = '/files'
       end
 
       # TODO find a better way to encapsulate this into a configuration module or similar
       def self.reset_config
         super
         configure do |config|
-          config.downloader_path_prefix = '/files'
+          config.download_path_prefix = '/files'
         end
       end
     end # Base

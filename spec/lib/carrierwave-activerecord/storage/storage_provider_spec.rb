@@ -1,6 +1,4 @@
-# TODO: Re-factor with implicit subject and review expectations.
-#
-# TODO: Deal with @file_properties ivar.
+# TODO: Re-factor to use implicit subject and review expectations.
 #
 # TODO: We use mocks with .and_call_original because the methods being
 # tested must execute the rest of the method to decorate the returned
@@ -8,6 +6,14 @@
 # to inject the correct type of file [build it from a Factory, because
 # otherwise, the mocked file and the real File will eventually be out of
 # sync.
+#
+# TODO: Remove deep "implementation" testing, e.g. "calls #create!".
+#
+# TODO: Instead of specing the return behavior of "store!" *and*
+# "retrieve!", should we spec the return behaviour of only "retrieve!"
+# and then specifiy that "store!" and "retrieve!" should return the same
+# thing?
+
 
 require 'spec_helper'
 
@@ -27,6 +33,7 @@ module CarrierWave
             end
 
             storage :active_record
+
           end.new
         end
 
@@ -48,15 +55,21 @@ module CarrierWave
           url_helpers = mock 'Rails URL helpers module'
           url_helpers.should_receive(:article_path).with(article).and_return('/articles/1')
 
-          ::Rails = mock 'Rails'
-          ::Rails.stub_chain('application.routes.url_helpers') { url_helpers }
+          stub_const('Rails', 'Rails')
+          Rails.stub_chain('application.routes.url_helpers') { url_helpers }
 
           uploader.should_receive(:model).and_return(article)
           uploader.should_receive(:mounted_as).and_return(:file)
         end
 
         let(:rails_url)            { '/articles/1/file' }
-        let(:storage_provider_url) { StorageProvider::CUSTOM_URL }
+        let(:storage_provider_url) { [ uploader.download_path_prefix, identifier].join '/' }
+
+        let(:uploader_default_url) { "/url/to/#{identifier}" }
+
+        def add_default_url_to_uploader
+          uploader.class_eval { def default_url ; "/url/to/#{identifier}" ; end }
+        end
 
         describe '#store!(file)' do
 
@@ -86,6 +99,14 @@ module CarrierWave
               storage.store!(file).url.should eq storage_provider_url
             end
           end
+
+          context 'with a default_url defined in the uploader' do
+            it 'sets the file URL to the default url' do
+              add_default_url_to_uploader
+              storage.store!(file).url.should eq uploader_default_url
+            end
+          end
+
         end
 
         describe '#retrieve!(identifier)' do
@@ -113,6 +134,13 @@ module CarrierWave
           context 'without ::Rails' do
             it 'sets the file URL to a helpful message' do
               storage.retrieve!(identifier).url.should eq storage_provider_url
+            end
+          end
+
+          context 'with a default_url defined in the uploader' do
+            it 'sets the file URL to the default url' do
+              add_default_url_to_uploader
+              storage.store!(file).url.should eq uploader_default_url
             end
           end
         end

@@ -6,13 +6,13 @@ describe 'carrierwave-activerecord' do
 
   let(:set_alternate_download_url_prefix) do
     CarrierWave::Uploader::Base.configure do |config|
-      config.downloader_path_prefix = '/images'
+      config.download_path_prefix = '/images'
     end
   end
 
   describe 'configuration defaults' do
-    it 'sets /files as default downloader path prefix' do
-      uploader.downloader_path_prefix.should eq('/files')
+    it 'sets /files as default download path prefix' do
+      uploader.download_path_prefix.should eq '/files'
     end
   end
 
@@ -21,17 +21,19 @@ describe 'carrierwave-activerecord' do
       uploader.reset_config
     end
 
-    it 'adds a downloader path prefix' do
+    it 'adds a download path prefix' do
       expect { set_alternate_download_url_prefix }.to_not raise_error
+      uploader.download_path_prefix.should eq '/images'
     end
   end
 
   describe 'configuration reset' do
-    it 'sets the downloader path prefix to /files' do
+    it 'sets the download path prefix to /files' do
       set_alternate_download_url_prefix
 
       uploader.reset_config
-      uploader.downloader_path_prefix.should eq('/files')
+      uploader.download_path_prefix.should eq '/files'
     end
   end
+
 end
