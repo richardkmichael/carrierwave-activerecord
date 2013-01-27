@@ -7,7 +7,7 @@ Given(/^an uploader using 'active_record' storage$/) do
 end
 
 When(/^I upload the fixture file '(\w+\.\w+)'$/) do |filename|
-  @file_path = "features/fixtures/#{filename}"
+  @file_path = "fixtures/#{filename}"
   @file = File.open @file_path,'r'
 
   @uploader.store! @file
