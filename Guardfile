@@ -8,7 +8,7 @@
 #   end
 # end
 
-guard 'rspec' do
+guard 'rspec', cli: '--color' do
   watch(%r{^spec/.+_spec\.rb$})
 
   watch('spec/spec_helper.rb') { 'spec' }
