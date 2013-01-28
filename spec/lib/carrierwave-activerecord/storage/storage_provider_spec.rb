@@ -19,7 +19,7 @@ require 'spec_helper'
 
 module CarrierWave 
   module Storage
-    module ActiveRecord 
+    module ActiveRecord
 
       describe StorageProvider do
 
@@ -33,7 +33,6 @@ module CarrierWave
             end
 
             storage :active_record
-
           end.new
         end
 

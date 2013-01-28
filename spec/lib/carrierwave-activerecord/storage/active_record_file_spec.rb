@@ -22,6 +22,7 @@ module CarrierWave
         end
 
       end # ActiveRecordFile
-    end
-  end
-end
+
+    end # ActiveRecord
+  end # Storage
+end # CarrierWave
