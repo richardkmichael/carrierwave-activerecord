@@ -54,7 +54,7 @@ module CarrierWave
           url_helpers = mock 'Rails URL helpers module'
           url_helpers.should_receive(:article_path).with(article).and_return('/articles/1')
 
-          stub_const('Rails', 'Rails')
+          stub_const('::Rails', 'Rails')
           Rails.stub_chain('application.routes.url_helpers') { url_helpers }
 
           uploader.should_receive(:model).and_return(article)
