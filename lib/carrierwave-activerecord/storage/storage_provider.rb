@@ -2,7 +2,13 @@ module CarrierWave
   module Storage
     module ActiveRecord 
 
-      class StorageProvider < Abstract
+      class StorageProvider
+
+        attr_reader :uploader
+
+        def initialize(uploader)
+          @uploader = uploader
+        end
 
         def store! sanitized_file
           @file = File.create! sanitized_file, uploader.identifier
