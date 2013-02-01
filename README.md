@@ -1,24 +1,22 @@
 # Carrierwave::ActiveRecord
 
-CarrierWave::ActiveRecord is a CarrierWave plugin which permits it to use
-ActiveRecord as the storage provider for file data.
-
-It relies on the ActiveRecord API to be database agnostic.  However, at
-this time, it is tested against only SQLite.
+CarrierWave::ActiveRecord is a CarrierWave plugin which stores file data
+using ActiveRecord.  It relies on ActiveRecord for database
+independence.  At this time, it is tested against only SQLite.
 
 ## Installation
 
 ### Add the gem
 
-Add this line to your Gemfile:
+Add it to your Gemfile:
 
     gem 'carrierwave-activerecord'
 
-And then execute:
+And install:
 
     $ bundle
 
-Or install manually:
+Or manually:
 
     $ gem install carrierwave-activerecord
 
@@ -30,16 +28,22 @@ To use the ActiveRecord store, add the following to your uploader:
 
 ### Prepare the database
 
-To store the images, the gem assumes existence of a database table named
-`carrier_wave_files` with the following columns:
+By default, the gem uses a table named `carrier_wave_files` with the
+following columns:
 
-* original_filename: string
 * identifier: string
+* original_filename: string
 * content_type: string
-* extension: string
-* filename: string
 * size: integer
 * data: binary
+
+The table name is a CarrierWave configurable, e.g.:
+
+```ruby
+configure do |config|
+  config.active_record_tablename = 'my_file_storage_table'
+end
+```
 
 ### Rails
 
@@ -51,11 +55,9 @@ If you do not have a suitable table, the following Rails migration can be used:
 class CreateCarrierWaveFiles < ActiveRecord::Migration
   def change
     create_table :carrier_wave_files do |t|
-      t.string :original_filename
       t.string :identifier
+      t.string :original_filename
       t.string :content_type
-      t.string :extension
-      t.string :filename
       t.string :size
       t.binary :data
 
