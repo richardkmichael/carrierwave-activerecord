@@ -1,19 +1,22 @@
 # TODO: Re-factor to use implicit subject and review expectations.
-#
-# TODO: We use mocks with .and_call_original because the methods being
-# tested must execute the rest of the method to decorate the returned
-# File.  Alternately, we could use .and_return(@active_record_file_mock)
-# to inject the correct type of file [build it from a Factory, because
-# otherwise, the mocked file and the real File will eventually be out of
-# sync.
-#
-# TODO: Remove deep "implementation" testing, e.g. "calls #create!".
-#
-# TODO: Instead of specing the return behavior of "store!" *and*
-# "retrieve!", should we spec the return behaviour of only "retrieve!"
-# and then specifiy that "store!" and "retrieve!" should return the same
-# thing?
 
+# TODO: We use mocks with .and_call_original because the methods being
+#       tested must execute the rest of the method to decorate the returned
+#       File.  Alternately, we could use .and_return(@active_record_file_mock)
+#       to inject the correct type of file [build it from a Factory, because
+#       otherwise, the mocked file and the real File will eventually be out of
+#       sync.
+
+# TODO: Remove deep "implementation" testing, e.g. "calls #create!".
+
+# TODO: Instead of specing the return behavior of "store!" *and*
+#       "retrieve!", should we spec the return behaviour of only "retrieve!"
+#       and then specifiy that "store!" and "retrieve!" should return the same
+#       thing?
+
+# TODO: DRY URL spec with "shared_examples" / "it_behaves_like" / helper method module?
+
+# TODO: Use a named subject to fix the initialization of the StorageProvider under test.
 
 require 'spec_helper'
 
@@ -39,13 +42,11 @@ module CarrierWave
         let(:identifier)      { uploader.identifier }
         let(:storage)         { StorageProvider.new uploader }
         let(:file)            { mock 'File to store.', file_properties }
-        let(:file_properties) { { filename:          'sample.png',
-                                  original_filename: 'o_sample.png',
+        let(:file_properties) { { original_filename: 'o_sample.png',
                                   content_type:      'image/png',
-                                  extension:         'png',
                                   size:              123,
-                                  read:              1337,
-                                  data:              1337 } }
+                                  data:              1337,
+                                  read:              1337 } }
 
         let(:mock_rails_url_helpers) do
           article = mock 'Article 1'
@@ -54,7 +55,7 @@ module CarrierWave
           url_helpers = mock 'Rails URL helpers module'
           url_helpers.should_receive(:article_path).with(article).and_return('/articles/1')
 
-          stub_const('Rails', 'Rails')
+          stub_const('::Rails', 'Rails')
           Rails.stub_chain('application.routes.url_helpers') { url_helpers }
 
           uploader.should_receive(:model).and_return(article)

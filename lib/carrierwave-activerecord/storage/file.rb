@@ -5,18 +5,13 @@ module CarrierWave
       class File
 
         def self.create!(new_file, identifier)
-          attributes = { :original_filename => new_file.original_filename,
+          attributes = { :identifier        => identifier,
+                         :original_filename => new_file.original_filename,
                          :content_type      => new_file.content_type,
-                         :extension         => new_file.extension,
-                         :filename          => new_file.filename,
                          :size              => new_file.size,
-                         :data              => new_file.read,
-                         :identifier        => identifier }
+                         :data              => new_file.read }
 
-          active_record_file = ActiveRecordFile.new attributes
-          active_record_file.save
-
-          self.new active_record_file
+          self.new ActiveRecordFile.create attributes
         end
 
         def self.fetch! identifier
@@ -27,8 +22,8 @@ module CarrierWave
           ActiveRecordFile.delete_all
         end
 
-        attr_reader :file
 
+        attr_reader :file
         attr_accessor :url
 
         def initialize(file = nil)
@@ -39,6 +34,33 @@ module CarrierWave
           file.nil?
         end
 
+        def read
+          file.data if file
+        end
+
+        def size
+          file.size if file
+        end
+
+        def content_type
+          file.content_type if file
+        end
+
+        def content_type= content_type
+          if file
+            file.content_type =  content_type
+            file.save
+          end
+        end
+
+        def identifier
+          file.identifier
+        end
+
+        def original_filename
+          file.original_filename if file
+        end
+
         def delete
           if file
             file.destroy
@@ -46,10 +68,8 @@ module CarrierWave
             false
           end
         end
+        alias_method :destroy!, :delete
 
-        def identifier
-          file.identifier
-        end
       end # File
 
     end # ActiveRecord

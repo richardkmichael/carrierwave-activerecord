@@ -1,7 +1,10 @@
 # TODO: Re-factor with implicit subject and review expectations.
-# TODO: Deal with @file_properties ivar.
+
 # TODO: Write create specs to cover the case when a same-named file already
 #       exists; e.g. push into the two contexts.
+
+# TODO: Set to a SHA1; it will matter once validations are on
+#       the ARFile and constraints are in the database.
 
 require 'spec_helper'
 
@@ -11,35 +14,47 @@ module CarrierWave
 
       describe File do
 
+        # Methods which are proxied to us by various parts of CarrierWave.
+
+        # Uploader::Base::Url
         it { should respond_to(:url) }
 
-        # In the description of an "it ... do", we can't use a let.  In the
-        # block of an "it ... do", we can't use an instance variable.  This
-        # makes it hard to DRY out the spec.
+        # Uploader::Base::Proxy
+        it { should respond_to(:blank?) }
+        it { should respond_to(:identifier) }
+        it { should respond_to(:read) }
+        it { should respond_to(:size) }
+        # it { should respond_to(:path) }        # What should we return for :path, if anything?
+
+        # Uploader::Base::MimeTypes
+        it { should respond_to(:content_type) }
+        it { should respond_to(:content_type=) }
+
+        # Uploader::Base::RMagick
+        it { should respond_to(:destroy!) }
+
+        # CarrierWave::SanitizedFile
+        it { should respond_to(:original_filename) }
+        it { should respond_to(:size) }
+        # it { should respond_to(:rewind) }       # We don't need to respond to rewind.
+
+
+        # TODO: In the description of an "it ... do", we can't use a let.  In
+        #       the block of an "it ... do", we can't use an instance variable.
+        #       This makes it hard to DRY out the spec.
         # @provider_file_class = ::CarrierWave::Storage::ActiveRecord::File
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
 
-        # TODO: Set to a SHA1; it will matter once validations are on
-        #       the ARFile and constraints are in the database.
         let(:identifier) { '/uploads/sample.png' }
-        let(:file_properties) { { filename:          'sample.png',
-                                  original_filename: 'o_sample.png',
+
+        let(:file_properties) { { original_filename: 'o_sample.png',
                                   content_type:      'image/png',
-                                  extension:         'png',
                                   size:              123,
-                                  read:              1337,
-                                  data:              1337 } }
+                                  data:              1337,
+                                  read:              1337 } }
 
 
         before :each do
-          @file_properties = { filename:          'sample.png',
-                               original_filename: 'o_sample.png',
-                               content_type:      'image/png',
-                               extension:         'png',
-                               read:              1337,
-                               data:              1337,
-                               size:              123 }
-
           CarrierWave::Storage::ActiveRecord::File.delete_all
         end
 
