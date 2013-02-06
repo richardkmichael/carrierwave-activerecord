@@ -54,7 +54,7 @@ module CarrierWave
         end
 
         def identifier
-          file.identifier
+          file.identifier if file
         end
 
         def original_filename

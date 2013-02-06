@@ -12,6 +12,9 @@
 
 # TODO: Should we return anything for CW::B::Proxy#path() and
 #       CW::SanitizedFile#rewind() ?
+
+# TODO: Test content_type= when a file was not found in the database?
+
 require 'spec_helper'
 
 module CarrierWave 
@@ -33,8 +36,8 @@ module CarrierWave
         let(:file_properties) { { original_filename: 'o_sample.png',
                                   content_type:      'image/png',
                                   size:              123,
-                                  data:              1337,
-                                  read:              1337 } }
+                                  data:              'File content.',
+                                  read:              'File content.' } }
 
         before :each do
           CarrierWave::Storage::ActiveRecord::File.delete_all
@@ -109,6 +112,50 @@ module CarrierWave
               retrieved_file.delete.should be_true
             end
           end
+
+          describe '#blank?' do
+            it 'returns false' do
+              retrieved_file.blank?.should be_false
+            end
+          end
+
+          describe '#read' do
+            it 'returns the file contant' do
+              retrieved_file.read.should eq 'File content.'
+            end
+          end
+
+          describe '#size' do
+            it 'returns 123' do
+              # TODO: Should we be computing the size, instead of storing the attribute?
+              retrieved_file.size.should eq 123
+            end
+          end
+
+          describe '#identifier' do
+            it 'returns the identifier' do
+              retrieved_file.identifier.should eq identifier
+            end
+          end
+
+          describe '#original_filename' do
+            it 'returns the original filename' do
+              retrieved_file.original_filename.should eq 'o_sample.png'
+            end
+          end
+
+          describe '#content_type' do
+            it 'returns the content type' do
+              retrieved_file.content_type.should eq 'image/png'
+            end
+          end
+
+          describe '#content_type=' do
+            it 'sets the content type' do
+              retrieved_file.content_type = 'text/plain'
+              retrieved_file.content_type.should eq 'text/plain'
+            end
+          end
         end
 
 
@@ -131,6 +178,42 @@ module CarrierWave
           describe '#delete' do
             it 'returns false' do
               retrieved_file.delete.should be_false
+            end
+          end
+
+          describe '#blank?' do
+            it 'returns true' do
+              retrieved_file.blank?.should be_true
+            end
+          end
+
+          describe '#read' do
+            it 'returns nil' do
+              retrieved_file.read.should be_nil
+            end
+          end
+
+          describe '#size' do
+            it 'returns nil' do
+              retrieved_file.size.should be_nil
+            end
+          end
+
+          describe '#identifier' do
+            it 'returns nil' do
+              retrieved_file.identifier.should be_nil
+            end
+          end
+
+          describe '#original_filename' do
+            it 'returns nil' do
+              retrieved_file.original_filename.should be_nil
+            end
+          end
+
+          describe '#content_type' do
+            it 'returns nil' do
+              retrieved_file.content_type.should be_nil
             end
           end
         end
