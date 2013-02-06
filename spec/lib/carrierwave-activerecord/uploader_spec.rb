@@ -36,27 +36,20 @@ describe 'Uploader' do
                             data:              1337,
                             read:              1337 } }
 
+
+  # Tests refute move_to_cache() to be confident about which message should [not] be received.
   context 'with the filesystem cache disabled' do
-
     it 'should not cache the file' do
-
-      # No file should be written, or moved or copied.
-      ::FileUtils.should_not_receive :mv
-      ::FileUtils.should_not_receive :cp
-      File.any_instance.should_not_receive :write
-
+      non_caching_uploader.move_to_cache.should be_false
+      CarrierWave::SanitizedFile.any_instance.should_not_receive :copy_to
       non_caching_uploader.store! file
     end
   end
 
   context 'with the filesystem cache enabled' do
     it 'should cache the file' do
-
-      # If the file exists, it will be moved or copied; otherwise, a new file written.
-      ::FileUtils.should_receive :mv ||
-      ::FileUtils.should_receive :cp ||
-      File.any_instance.should_receive :write
-
+      caching_uploader.move_to_cache.should be_false
+      CarrierWave::SanitizedFile.any_instance.should_receive :copy_to
       caching_uploader.store! file
     end
   end

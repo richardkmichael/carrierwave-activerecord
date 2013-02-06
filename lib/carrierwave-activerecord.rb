@@ -34,23 +34,37 @@ module CarrierWave
           config.use_filesystem_cache    = true
         end
       end
+    end # Base
 
+    module Cache
 
-      # TODO: Modifying CarrierWave internals to disable the cache is bad...?
-      alias_method :original_cache!, :cache!
+      # Minimally override CarrierWave::Uploader::Cache#cache!  Copied directly
+      # from CarrierWave, except wrap "if move_to_cache ; .. ; end" to prevent
+      # filesystem access.
 
-      def cache! new_file
-        unless use_filesystem_cache
-          CarrierWave::SanitizedFile.class_eval do
-            def move_to *args; self; end
-            def copy_to *args; self; end
+      def cache!(new_file = sanitized_file)
+        new_file = CarrierWave::SanitizedFile.new(new_file)
+
+        unless new_file.empty?
+          raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
+
+          with_callbacks(:cache, new_file) do
+            self.cache_id = CarrierWave.generate_cache_id unless cache_id
+
+            @filename = new_file.filename
+            self.original_filename = new_file.filename
+
+            if use_filesystem_cache
+              if move_to_cache
+                @file = new_file.move_to(cache_path, permissions, directory_permissions)
+              else
+                @file = new_file.copy_to(cache_path, permissions, directory_permissions)
+              end
+            end
           end
         end
-
-        original_cache! new_file
       end
+    end # Cache
 
-    end # Base
   end # Uploader
-
 end # CarrierWave
