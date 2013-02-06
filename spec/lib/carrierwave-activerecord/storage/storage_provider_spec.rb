@@ -19,6 +19,7 @@
 # TODO: Use a named subject to fix the initialization of the StorageProvider under test.
 
 require 'spec_helper'
+require 'pry'
 
 module CarrierWave 
   module Storage
@@ -106,7 +107,6 @@ module CarrierWave
               storage.store!(file).url.should eq uploader_default_url
             end
           end
-
         end
 
         describe '#retrieve!(identifier)' do
