@@ -9,13 +9,11 @@ module CarrierWave
         alias_method    :delete, :destroy
         alias_attribute :read, :data
 
-        attr_accessible :original_filename,
+        attr_accessible :identifier,
+                        :original_filename,
                         :content_type,
-                        :extension,
-                        :filename,
                         :size,
-                        :data,
-                        :identifier
+                        :data
       end # ActiveRecordFile
 
     end # ActiveRecord
