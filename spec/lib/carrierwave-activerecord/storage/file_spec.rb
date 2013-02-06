@@ -6,6 +6,12 @@
 # TODO: Set to a SHA1; it will matter once validations are on
 #       the ARFile and constraints are in the database.
 
+# TODO: In the description of an "it ... do", we can't use a let.  In
+#       the block of an "it ... do", we can't use an instance variable.
+#       This makes it hard to DRY out the spec: @provider_file_class.
+
+# TODO: Should we return anything for CW::B::Proxy#path() and
+#       CW::SanitizedFile#rewind() ?
 require 'spec_helper'
 
 module CarrierWave 
@@ -14,35 +20,12 @@ module CarrierWave
 
       describe File do
 
-        # Methods which are proxied to us by various parts of CarrierWave.
+        it { should respond_to(:url) }                                # Uploader::Base::Url
+        it { should respond_to(:blank?, :identifier, :read, :size) }  # Uploader::Base::Proxy
+        it { should respond_to(:content_type, :content_type=) }       # Uploader::Base::MimeTypes
+        it { should respond_to(:destroy!) }                           # Uploader::Base::RMagick
+        it { should respond_to(:original_filename, :size) }           # CarrierWave::SanitizedFile
 
-        # Uploader::Base::Url
-        it { should respond_to(:url) }
-
-        # Uploader::Base::Proxy
-        it { should respond_to(:blank?) }
-        it { should respond_to(:identifier) }
-        it { should respond_to(:read) }
-        it { should respond_to(:size) }
-        # it { should respond_to(:path) }        # What should we return for :path, if anything?
-
-        # Uploader::Base::MimeTypes
-        it { should respond_to(:content_type) }
-        it { should respond_to(:content_type=) }
-
-        # Uploader::Base::RMagick
-        it { should respond_to(:destroy!) }
-
-        # CarrierWave::SanitizedFile
-        it { should respond_to(:original_filename) }
-        it { should respond_to(:size) }
-        # it { should respond_to(:rewind) }       # We don't need to respond to rewind.
-
-
-        # TODO: In the description of an "it ... do", we can't use a let.  In
-        #       the block of an "it ... do", we can't use an instance variable.
-        #       This makes it hard to DRY out the spec.
-        # @provider_file_class = ::CarrierWave::Storage::ActiveRecord::File
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
 
         let(:identifier) { '/uploads/sample.png' }
@@ -53,12 +36,11 @@ module CarrierWave
                                   data:              1337,
                                   read:              1337 } }
 
-
         before :each do
           CarrierWave::Storage::ActiveRecord::File.delete_all
         end
 
-        describe '#create!(file)' do
+        describe '#create! file' do
 
           let(:active_record_file) { mock 'ActiveRecordFile stored.', file_properties.merge(save: nil) }
           let(:file_to_store)      { mock 'File to store.',           file_properties.merge(save: nil) }
@@ -88,13 +70,13 @@ module CarrierWave
             stored_file = File.create!(file_to_store, identifier)
 
             file_properties.each do |property, value|
-              stored_file.file.send(property).should eq(value)
+              stored_file.file.send(property).should eq value
             end
           end
 
           it 'sets the identifier on the file' do
             stored_file = File.create!(file_to_store, identifier).file
-            stored_file.identifier.should eq(identifier)
+            stored_file.identifier.should eq identifier
           end
         end
 
@@ -114,7 +96,7 @@ module CarrierWave
             end
 
             it 'sets the file property to the file from the database' do
-              retrieved_file.file.should eq(@stored_file)
+              retrieved_file.file.should eq @stored_file
             end
           end
 
