@@ -1,23 +1,3 @@
-# TODO: Re-factor to use implicit subject and review expectations.
-
-# TODO: We use mocks with .and_call_original because the methods being
-#       tested must execute the rest of the method to decorate the returned
-#       File.  Alternately, we could use .and_return(@active_record_file_mock)
-#       to inject the correct type of file [build it from a Factory, because
-#       otherwise, the mocked file and the real File will eventually be out of
-#       sync.
-
-# TODO: Remove deep "implementation" testing, e.g. "calls #create!".
-
-# TODO: Instead of specing the return behavior of "store!" *and*
-#       "retrieve!", should we spec the return behaviour of only "retrieve!"
-#       and then specifiy that "store!" and "retrieve!" should return the same
-#       thing?
-
-# TODO: DRY URL spec with "shared_examples" / "it_behaves_like" / helper method module?
-
-# TODO: Use a named subject to fix the initialization of the StorageProvider under test.
-
 require 'spec_helper'
 
 module CarrierWave 
@@ -78,13 +58,11 @@ module CarrierWave
           it        { should be_an_instance_of File }
           its(:url) { should eq storage_provider_url }
 
-          # TODO: This tests File; we should not do that here.
           it 'should create a File instance' do
             File.should_receive(:create!).with(file, identifier).and_call_original
             storage.store! file
           end
 
-          # TODO: This indirectly tests File (calls to uploader); we should not do that here.
           it 'should ask the uploader for the filename' do
             uploader.should_receive(:filename).with(no_args)
             storage.store!(file)
@@ -115,16 +93,11 @@ module CarrierWave
           it        { should be_a_kind_of File }
           its(:url) { should eq storage_provider_url }
 
-          # TODO: This tests File; we should not do that here.
           it 'should fetch a File instance' do
             File.should_receive(:fetch!).with(identifier).and_call_original
             storage.retrieve!(identifier)
           end
 
-          # TODO: Can we use "its" with a tag for a before block?
-          #       its(:url, Rails: true)     { should eq rails_url }
-          #       its(:url)                  { should eq storage_provider_url }
-          #       before(:each, Rails: true) { mock_rails_url_helpers }
           context 'with ::Rails' do
             it 'should set the URL property on the returned file' do
               mock_rails_url_helpers
@@ -141,7 +114,6 @@ module CarrierWave
         end
 
       end # describe StorageProvider do
-
-    end
-  end
-end
+    end # ActiveRecord
+  end # Storage
+end # CarrierWave

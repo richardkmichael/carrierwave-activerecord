@@ -173,7 +173,7 @@ The following example and test project tracks the gem: https://github.com/richar
 
 ### How to add a storage provider
 
-TODO: Link to the wiki page
+A work-in-progress guide to writing a CarrierWave storage provider is here: https://github.com/richardkmichael/carrierwave-activerecord/wiki/Howto:-Adding-a-new-storage-engine
 
 ```
 [3] pry(#<CarrierWave::Mount::Mounter>)> self

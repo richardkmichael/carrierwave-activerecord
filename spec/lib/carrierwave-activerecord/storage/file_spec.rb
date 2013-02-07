@@ -1,18 +1,3 @@
-# TODO: Write create specs to cover the case when a same-named file already
-#       exists; e.g. push into the two contexts.
-
-# TODO: Set to a SHA1; it will matter once validations are on
-#       the ARFile and constraints are in the database.
-
-# TODO: In the description of an "it ... do", we can't use a let.  In
-#       the block of an "it ... do", we can't use an instance variable.
-#       This makes it hard to DRY out the spec: @provider_file_class.
-
-# TODO: Should we return anything for CW::B::Proxy#path() and
-#       CW::SanitizedFile#rewind() ?
-
-# TODO: Test content_type= when a file was not found in the database?
-
 require 'spec_helper'
 
 module CarrierWave 
@@ -41,7 +26,6 @@ module CarrierWave
 
         describe '#create!(file)' do
 
-          # TODO: This tests ActiveRecordFile; we shouldn't do that here.
           it 'should create an ActiveRecordFile instance' do
             ActiveRecordFile.should_receive(:new).and_return(active_record_file)
             File.create!(file_to_store, identifier)
@@ -63,7 +47,6 @@ module CarrierWave
             expect { File.create!(file_to_store, identifier) }.to change(ActiveRecordFile, :count).by(1)
           end
 
-          # TODO: This tests ActiveRecordFile; we shouldn't do that here.
           it 'should initialize the file instance' do
             stored_file = File.create!(file_to_store, identifier)
 
@@ -100,8 +83,6 @@ module CarrierWave
             its(:original_filename) { should eq 'o_sample.png' }
             its(:delete)            { should be_true }
 
-            # TODO: How to refactor expect{} and assignment spec to use
-            #       an implicit subject?
             let(:retrieved_file) { File.fetch! identifier }
 
             it 'deletes the record' do
