@@ -73,35 +73,32 @@ module CarrierWave
 
         describe '#store!(file)' do
 
-          it 'calls File.create!(file, identifier)' do
+          subject { storage.store! file }
+
+          it        { should be_an_instance_of File }
+          its(:url) { should eq storage_provider_url }
+
+          # TODO: This tests File; we should not do that here.
+          it 'should create a File instance' do
             File.should_receive(:create!).with(file, identifier).and_call_original
             storage.store! file
           end
 
-          it 'returns a CarrierWave::Storage::ActiveRecord::File' do
-            storage.store!(file).should be_instance_of File
-          end
-
-          it 'fetches the filename from the uploader' do
+          # TODO: This indirectly tests File (calls to uploader); we should not do that here.
+          it 'should ask the uploader for the filename' do
             uploader.should_receive(:filename).with(no_args)
             storage.store!(file)
           end
 
           context 'with ::Rails' do
-            it 'sets the URL property on the returned file' do
+            it 'should set the URL property on the returned file' do
               mock_rails_url_helpers
               storage.store!(file).url.should eq rails_url
             end
           end
 
-          context 'without ::Rails' do
-            it 'sets the file URL to a helpful message' do
-              storage.store!(file).url.should eq storage_provider_url
-            end
-          end
-
           context 'with a default_url defined in the uploader' do
-            it 'sets the file URL to the default url' do
+            it 'should set the file URL to the default url' do
               add_default_url_to_uploader
               storage.store!(file).url.should eq uploader_default_url
             end
@@ -111,34 +108,32 @@ module CarrierWave
 
         describe '#retrieve!(identifier)' do
 
-          before :each do
-            create_a_file_in_the_database file_properties
-          end
+          before(:each) { create_a_file_in_the_database file_properties }
 
-          it 'calls File.fetch!(identifier)' do
+          subject { storage.retrieve! identifier }
+
+          it        { should be_a_kind_of File }
+          its(:url) { should eq storage_provider_url }
+
+          # TODO: This tests File; we should not do that here.
+          it 'should fetch a File instance' do
             File.should_receive(:fetch!).with(identifier).and_call_original
             storage.retrieve!(identifier)
           end
 
-          it 'returns a CarrierWave::ActiveRecord::File' do
-            storage.retrieve!(identifier).should be_kind_of File
-          end
-
+          # TODO: Can we use "its" with a tag for a before block?
+          #       its(:url, Rails: true)     { should eq rails_url }
+          #       its(:url)                  { should eq storage_provider_url }
+          #       before(:each, Rails: true) { mock_rails_url_helpers }
           context 'with ::Rails' do
-            it 'sets the URL property on the returned file' do
+            it 'should set the URL property on the returned file' do
               mock_rails_url_helpers
               storage.retrieve!(identifier).url.should eq rails_url
             end
           end
 
-          context 'without ::Rails' do
-            it 'sets the file URL to a helpful message' do
-              storage.retrieve!(identifier).url.should eq storage_provider_url
-            end
-          end
-
           context 'with a default_url defined in the uploader' do
-            it 'sets the file URL to the default url' do
+            it 'should set the file URL to the default url' do
               add_default_url_to_uploader
               storage.store!(file).url.should eq uploader_default_url
             end

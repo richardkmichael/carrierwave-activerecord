@@ -1,5 +1,3 @@
-# TODO: Re-factor with implicit subject and review expectations.
-
 # TODO: Write create specs to cover the case when a same-named file already
 #       exists; e.g. push into the two contexts.
 
@@ -30,46 +28,43 @@ module CarrierWave
         it { should respond_to(:original_filename, :size) }           # CarrierWave::SanitizedFile
 
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
+        let(:identifier)          { '/uploads/sample.png' }
+        let(:active_record_file)  { mock 'ActiveRecordFile stored.', file_properties.merge(save: nil) }
+        let(:file_to_store)       { mock 'File to store.',           file_properties.merge(save: nil) }
+        let(:file_properties)     { { original_filename: 'o_sample.png',
+                                      content_type:      'image/png',
+                                      size:              123,
+                                      data:              'File content.',
+                                      read:              'File content.' } }
 
-        let(:identifier) { '/uploads/sample.png' }
+        before(:each) { CarrierWave::Storage::ActiveRecord::File.delete_all }
 
-        let(:file_properties) { { original_filename: 'o_sample.png',
-                                  content_type:      'image/png',
-                                  size:              123,
-                                  data:              'File content.',
-                                  read:              'File content.' } }
+        describe '#create!(file)' do
 
-        before :each do
-          CarrierWave::Storage::ActiveRecord::File.delete_all
-        end
+          # TODO: This tests ActiveRecordFile; we shouldn't do that here.
+          it 'should create an ActiveRecordFile instance' do
+            ActiveRecordFile.should_receive(:new).and_return(active_record_file)
+            File.create!(file_to_store, identifier)
+          end
 
-        describe '#create! file' do
-
-          let(:active_record_file) { mock 'ActiveRecordFile stored.', file_properties.merge(save: nil) }
-          let(:file_to_store)      { mock 'File to store.',           file_properties.merge(save: nil) }
-
-          it 'returns a File instance' do
+          it 'should return a File instance' do
             ActiveRecordFile.should_receive(:new).and_return(active_record_file)
             stored_file = File.create!(file_to_store, identifier)
             stored_file.should be_instance_of File
           end
 
-          it 'creates an ActiveRecordFile instance' do
-            ActiveRecordFile.should_receive(:new).and_return(active_record_file)
-            File.create!(file_to_store, identifier)
-          end
-
-          it 'returns a file with an associated ActiveRecordFile' do
+          it 'should return a File instance with an associated ActiveRecordFile instance' do
             ActiveRecordFile.stub(new: active_record_file)
             stored_file = File.create!(file_to_store, identifier)
-            stored_file.file.should eq(active_record_file)
+            stored_file.file.should eq active_record_file
           end
 
-          it 'creates a file record in the database' do
+          it 'should create a record in the database' do
             expect { File.create!(file_to_store, identifier) }.to change(ActiveRecordFile, :count).by(1)
           end
 
-          it 'initializes the file instance' do
+          # TODO: This tests ActiveRecordFile; we shouldn't do that here.
+          it 'should initialize the file instance' do
             stored_file = File.create!(file_to_store, identifier)
 
             file_properties.each do |property, value|
@@ -77,144 +72,65 @@ module CarrierWave
             end
           end
 
-          it 'sets the identifier on the file' do
+          it 'should set the identifier on the file' do
             stored_file = File.create!(file_to_store, identifier).file
             stored_file.identifier.should eq identifier
           end
         end
 
 
-        context 'given the file exists in the database' do
+        describe '#fetch!(identifier)' do
 
-          let(:retrieved_file) { File.fetch! identifier }
+          subject { File.fetch! identifier }
 
-          before :each do
-            @stored_file = create_a_file_in_the_database file_properties
-            ActiveRecordFile.count.should eq(1)
-          end
+          context 'given the file exists in the database' do
 
-          describe '#fetch!(identifier)' do
-            it 'returns a CarrierWave::Storage::ActiveRecord::File' do
-              retrieved_file.should be_instance_of provider_file_class
+            before :each do
+              @stored_file = create_a_file_in_the_database file_properties
+              ActiveRecordFile.count.should eq(1)
             end
 
-            it 'sets the file property to the file from the database' do
-              retrieved_file.file.should eq @stored_file
-            end
-          end
+            it                      { should     be_instance_of provider_file_class }
+            it                      { should_not be_blank }
+            its(:read)              { should eq 'File content.' }
+            its(:size)              { should eq 123 }
+            its(:file)              { should eq @stored_file }
+            its(:identifier)        { should eq identifier }
+            its(:content_type)      { should eq 'image/png' }
+            its(:original_filename) { should eq 'o_sample.png' }
+            its(:delete)            { should be_true }
 
-          describe '#delete' do
+            # TODO: How to refactor expect{} and assignment spec to use
+            #       an implicit subject?
+            let(:retrieved_file) { File.fetch! identifier }
+
             it 'deletes the record' do
               expect { retrieved_file.delete }.to change( ActiveRecordFile, :count).by(-1)
             end
 
-            it 'returns true' do
-              retrieved_file.delete.should be_true
-            end
-          end
-
-          describe '#blank?' do
-            it 'returns false' do
-              retrieved_file.blank?.should be_false
-            end
-          end
-
-          describe '#read' do
-            it 'returns the file contant' do
-              retrieved_file.read.should eq 'File content.'
-            end
-          end
-
-          describe '#size' do
-            it 'returns 123' do
-              # TODO: Should we be computing the size, instead of storing the attribute?
-              retrieved_file.size.should eq 123
-            end
-          end
-
-          describe '#identifier' do
-            it 'returns the identifier' do
-              retrieved_file.identifier.should eq identifier
-            end
-          end
-
-          describe '#original_filename' do
-            it 'returns the original filename' do
-              retrieved_file.original_filename.should eq 'o_sample.png'
-            end
-          end
-
-          describe '#content_type' do
-            it 'returns the content type' do
-              retrieved_file.content_type.should eq 'image/png'
-            end
-          end
-
-          describe '#content_type=' do
             it 'sets the content type' do
               retrieved_file.content_type = 'text/plain'
               retrieved_file.content_type.should eq 'text/plain'
             end
           end
-        end
 
 
-        context 'given the file does not exist in the database' do
+          # TODO: Why does this return anything at all, instead of 'nil'?
+          context 'given the file does not exist in the database' do
 
-          let(:retrieved_file) { File.fetch! 'non-existent-identifier' }
+            let(:identifier) { 'non-existent-identifier' }
 
-          describe '#fetch!(identifier)' do
-            it 'returns a CarrierWave::Storage::ActiveRecord::File' do
-              retrieved_file.should be_instance_of provider_file_class
-            end
-          end
+            it { should be_blank }
+            it { should be_instance_of provider_file_class }
 
-          describe '#url' do
-            it 'returns nil' do
-              retrieved_file.url.should be_nil
-            end
-          end
-
-          describe '#delete' do
-            it 'returns false' do
-              retrieved_file.delete.should be_false
-            end
-          end
-
-          describe '#blank?' do
-            it 'returns true' do
-              retrieved_file.blank?.should be_true
-            end
-          end
-
-          describe '#read' do
-            it 'returns nil' do
-              retrieved_file.read.should be_nil
-            end
-          end
-
-          describe '#size' do
-            it 'returns nil' do
-              retrieved_file.size.should be_nil
-            end
-          end
-
-          describe '#identifier' do
-            it 'returns nil' do
-              retrieved_file.identifier.should be_nil
-            end
-          end
-
-          describe '#original_filename' do
-            it 'returns nil' do
-              retrieved_file.original_filename.should be_nil
-            end
-          end
-
-          describe '#content_type' do
-            it 'returns nil' do
-              retrieved_file.content_type.should be_nil
-            end
+            its(:url)               { should be_nil }
+            its(:read)              { should be_nil }
+            its(:size)              { should be_nil }
+            its(:file)              { should be_nil }
+            its(:identifier)        { should be_nil }
+            its(:content_type)      { should be_nil }
+            its(:original_filename) { should be_nil }
+            its(:delete)            { should be_false }
           end
         end
 

@@ -23,7 +23,7 @@ module CarrierWave
         end
 
 
-        attr_reader :file
+        attr_reader   :file
         attr_accessor :url
 
         def initialize(file = nil)
