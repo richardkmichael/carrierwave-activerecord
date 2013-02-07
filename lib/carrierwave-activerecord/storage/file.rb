@@ -11,11 +11,11 @@ module CarrierWave
                          :size              => new_file.size,
                          :data              => new_file.read }
 
-          self.new ActiveRecordFile.create attributes
+          self.new ActiveRecordFile.create! attributes
         end
 
         def self.fetch! identifier
-          self.new ActiveRecordFile.find_by_identifier identifier
+          self.new ActiveRecordFile.find_by_identifier! identifier
         end
 
         def self.delete_all

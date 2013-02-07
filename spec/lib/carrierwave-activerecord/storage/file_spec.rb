@@ -29,8 +29,8 @@ module CarrierWave
 
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
         let(:identifier)          { '/uploads/sample.png' }
-        let(:active_record_file)  { mock 'ActiveRecordFile stored.', file_properties.merge(save: nil) }
-        let(:file_to_store)       { mock 'File to store.',           file_properties.merge(save: nil) }
+        let(:active_record_file)  { mock 'ActiveRecordFile stored.', file_properties.merge(save!: nil) }
+        let(:file_to_store)       { mock 'File to store.',           file_properties.merge(save!: nil) }
         let(:file_properties)     { { original_filename: 'o_sample.png',
                                       content_type:      'image/png',
                                       size:              123,
@@ -115,27 +115,17 @@ module CarrierWave
           end
 
 
-          # TODO: Why does this return anything at all, instead of 'nil'?
           context 'given the file does not exist in the database' do
 
             let(:identifier) { 'non-existent-identifier' }
 
-            it { should be_blank }
-            it { should be_instance_of provider_file_class }
-
-            its(:url)               { should be_nil }
-            its(:read)              { should be_nil }
-            its(:size)              { should be_nil }
-            its(:file)              { should be_nil }
-            its(:identifier)        { should be_nil }
-            its(:content_type)      { should be_nil }
-            its(:original_filename) { should be_nil }
-            its(:delete)            { should be_false }
+            it 'raises an error' do
+              expect { File.fetch! identifier }.to raise_error(::ActiveRecord::RecordNotFound)
+            end
           end
         end
 
       end # describe File do
-
     end # ActiveRecord
   end # Storage
 end # CarrierWave

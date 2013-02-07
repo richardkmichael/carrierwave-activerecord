@@ -43,25 +43,6 @@ module CarrierWave
                           end
         end
 
-# TODO: Do we need read, write and filename methods?
-#       def write(sanitized_file)
-#         attributes = { :identifier   => identifier,
-#                        :filename     => sanitized_file.original_filename,
-#                        :data         => sanitized_file.read }
-
-#         # Should this duck-type CW::SanitizedFile?
-#         ActiveRecordFile.create! attributes
-#       end
-
-#       def read
-#         provider_file.data
-#       end
-
-#       def filename
-#         provider_file.filename
-#       end
-#       alias :original_filename :filename
-
         private
 
         def set_file_properties
