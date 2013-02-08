@@ -130,7 +130,7 @@ class PeopleController
 
   def avatar
     person = Person.find(params[:id])
-    send_data(person.avatar.file, filename: person.avatar.filename)
+    send_data(person.avatar.read, filename: person.avatar.file.filename)
   end
 end
 ```
