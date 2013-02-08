@@ -6,8 +6,8 @@ module CarrierWave
 
       describe StorageProvider do
 
-        # Configure the uploader with our storage provider so methods
-        # proxy to us; else, they proxy to the default storage provider.
+        # Configure the uploader with our storage provider to ensure methods
+        # proxy to us; else, they will proxy to the default storage provider.
         let(:uploader) do
           Class.new(CarrierWave::Uploader::Base) do
             configure do |config|

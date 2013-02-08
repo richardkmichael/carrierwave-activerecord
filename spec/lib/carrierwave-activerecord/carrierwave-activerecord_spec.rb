@@ -4,8 +4,6 @@ describe 'carrierwave-activerecord' do
 
   let(:uploader_class) { CarrierWave::Uploader::Base }
 
-# let(:active_record_file_class) { CarrierWave::Storage::ActiveRecord::ActiveRecordFile }
-
   let(:set_alternate_download_url_prefix) do
     uploader_class.configure do |config|
       config.download_path_prefix = '/images'
