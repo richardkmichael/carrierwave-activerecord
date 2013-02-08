@@ -60,6 +60,7 @@ module CarrierWave
         def original_filename
           file.original_filename if file
         end
+        alias_method :filename, :original_filename
 
         def delete
           if file

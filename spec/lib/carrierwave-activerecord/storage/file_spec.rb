@@ -12,6 +12,8 @@ module CarrierWave
         it { should respond_to(:destroy!) }                           # Uploader::Base::RMagick
         it { should respond_to(:original_filename, :size) }           # CarrierWave::SanitizedFile
 
+        it { should respond_to(:filename) }                            # A convenience method.
+
         let(:provider_file_class) { ::CarrierWave::Storage::ActiveRecord::File }
         let(:identifier)          { '/uploads/sample.png' }
         let(:active_record_file)  { mock 'ActiveRecordFile stored.', file_properties.merge(save!: nil) }
