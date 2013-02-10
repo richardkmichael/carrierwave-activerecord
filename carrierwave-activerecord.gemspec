@@ -25,7 +25,6 @@ Gem::Specification.new do |gem|
     carrierwave-activerecord.gemspec
 
     lib/carrierwave-activerecord.rb
-    lib/carrierwave-activerecord/storage/active_record.rb
     lib/carrierwave-activerecord/storage/active_record_file.rb
     lib/carrierwave-activerecord/storage/file.rb
     lib/carrierwave-activerecord/storage/storage_provider.rb
