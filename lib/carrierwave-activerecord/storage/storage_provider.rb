@@ -27,14 +27,13 @@ module CarrierWave
         # same ID such as @house.id = @book.id = 42.
         #
         # Override CarrierWave::Storage::Abstract#identifier() (by default
-        # returns @uploader.filename) to use a SHA1 of the filename, time and
-        # random number (to avoid time collisions) as the identifier stored in
-        # the mounted column.
+        # returns @uploader.filename) to use a SHA1 of the time and a random
+        # number (to avoid time collisions) as the identifier stored in the
+        # mounted column.  The identifier should be nil if there is no filename.
         def identifier
-          @identifier ||= begin
-                            token = "#{uploader.filename} #{Time.now.to_s} #{rand(1000)}"
-                            Digest::SHA1.hexdigest token
-                          end
+          if uploader.filename
+            @identifier ||= Digest::SHA1.hexdigest( Time.now.to_i + rand(1000) )
+          end
         end
 
         private
