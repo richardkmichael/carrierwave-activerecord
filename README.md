@@ -45,28 +45,14 @@ configure do |config|
 end
 ```
 
+
 ### Rails
 
-If you do not have a suitable table, the following Rails migration can be used:
+If you do not have a suitable table, you may generate a migration to
+create the default table:
 
-    $ rails g migration create_carrier_wave_files
-
-```ruby
-class CreateCarrierWaveFiles < ActiveRecord::Migration
-  def change
-    create_table :carrier_wave_files do |t|
-      t.string :identifier
-      t.string :original_filename
-      t.string :content_type
-      t.string :size
-      t.binary :data
-
-      t.timestamps
-    end
-  end
-end
-```
-
+    $ rails generate carrier_wave_files # => db/migrate/..._create_carrierwave_files.rb
+    $ rake db:migrate
 
 ### Outside Rails
 
