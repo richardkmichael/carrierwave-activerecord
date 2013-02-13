@@ -1,4 +1,4 @@
-class CreateCarrierWaveFiles < ActiveRecord::Migration
+class CreateCarrierwaveFiles < ActiveRecord::Migration
   def change
     create_table :carrier_wave_files do |t|
       t.string :identifier
