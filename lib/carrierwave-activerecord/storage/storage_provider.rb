@@ -32,7 +32,7 @@ module CarrierWave
         # mounted column.  The identifier should be nil if there is no filename.
         def identifier
           if uploader.filename
-            @identifier ||= Digest::SHA1.hexdigest( Time.now.to_i + rand(1000) )
+            @identifier ||= Digest::SHA1.hexdigest( "#{Time.now.to_i + rand(1000)}" )
           end
         end
 
