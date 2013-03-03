@@ -4,6 +4,7 @@ require 'rails/generators/active_record'
 
 class CarrierwaveActiverecordGenerator < Rails::Generators::Base
 
+  desc 'Generate a migration to create a database table suitable for file data storage.'
   include Rails::Generators::Migration
 
   def self.next_migration_number dirname
