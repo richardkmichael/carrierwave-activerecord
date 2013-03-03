@@ -51,7 +51,7 @@ end
 If you do not have a suitable table, you may generate a migration to
 create the default table:
 
-    $ rails generate carrier_wave_files # => db/migrate/..._create_carrierwave_files.rb
+    $ rails generate carrierwave_activerecord # => db/migrate/..._create_carrierwave_files.rb
     $ rake db:migrate
 
 ### Outside Rails
