@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gemspec # See: carrierwave-activerecord.gemspec
 
