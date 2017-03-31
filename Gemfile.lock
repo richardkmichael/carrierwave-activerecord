@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    carrierwave-activerecord (0.1.0rc6)
+    carrierwave-activerecord (0.3.0)
       activerecord (~> 5.0)
       carrierwave (~> 1.0.0)
 
