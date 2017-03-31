@@ -1,7 +1,7 @@
 module CarrierWave
   module Storage
     module ActiveRecord
-      VERSION = '0.1.0rc6'
+      VERSION = '0.3.0'
     end
   end
 end
